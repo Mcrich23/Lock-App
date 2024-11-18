@@ -7,6 +7,25 @@
 
 import SwiftUI
 
+private enum PasswordStrength {
+    case weak
+    case ok
+    case strong
+    
+    init?(from requirements: Double) {
+        switch requirements {
+        case 0..<4:
+            self = .weak
+        case 4..<6:
+            self = .ok
+        case 6:
+            self = .strong
+        default:
+            return nil
+        }
+    }
+}
+
 struct CreatePasswordView: View {
     @State var showSetupText1 = false
     @State var showSetupText2 = false
@@ -19,6 +38,9 @@ struct CreatePasswordView: View {
     private var requirements: Array<Bool> {
         [
             password.count >= 7, // Minimum Length
+            password.contains(where: { $0.isLowercase }), // One Number
+            password.contains(where: { $0.isUppercase }), // One Number
+            password.contains(where: { $0.isLetter }), // One Number
             password.contains(where: { $0.isNumber }), // One Number
             password.range(of: "[ !\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~]+", options: .regularExpression) != nil // One Special Character
         ]
@@ -28,13 +50,17 @@ struct CreatePasswordView: View {
         requirements.reduce(0) { $0 + ($1 ? 1 : 0) }
     }
     
+    private var passwordStrength: PasswordStrength? {
+        PasswordStrength(from: requirementsBarValue)
+    }
+    
     private var requirementsBarText: String {
-        switch requirementsBarValue {
-        case 0, 1:
+        switch passwordStrength {
+        case .weak:
             "Weak"
-        case 2:
+        case .ok:
             "Ok"
-        case 3:
+        case .strong:
             "Strong"
         default:
             "Unkown"
@@ -42,12 +68,12 @@ struct CreatePasswordView: View {
     }
     
     private var requirementsBarColor: Color {
-        switch requirementsBarValue {
-        case 0, 1:
+        switch passwordStrength {
+        case .weak:
             Color.red
-        case 2:
+        case .ok:
             Color.yellow
-        case 3:
+        case .strong:
             Color.green
         default:
             Color.red
@@ -59,12 +85,12 @@ struct CreatePasswordView: View {
             return "custom.lock.badge.plus"
         }
         
-        switch requirementsBarValue {
-        case 0, 1:
+        switch passwordStrength {
+        case .weak:
             return "custom.lock.badge.exclamationmark"
-        case 2:
+        case .ok:
             return "custom.lock.trianglebadge.exclamationmark"
-        case 3:
+        case .strong:
             return "custom.lock.badge.checkmark"
         default:
             return "custom.lock.badge.plus"
@@ -159,6 +185,8 @@ struct CreatePasswordView: View {
                     .bold()
                 VStack(alignment: .leading) {
                     Text("• 7 or More Characters")
+                    Text("• At Least 1 Uppercase Letter")
+                    Text("• At Least 1 Lowercase Letter")
                     Text("• At Least 1 Number")
                     Text("• At Least 1 Special Character")
                 }
