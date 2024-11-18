@@ -105,6 +105,19 @@ struct CreatePasswordView: View {
                     .buttonStyle(.borderedProminent)
                     .disabled(password.isEmpty)
             }
+            
+            VStack(alignment: .leading) {
+                Text("Should Include:")
+                    .font(.title2)
+                    .bold()
+                VStack(alignment: .leading) {
+                    Text("• 7 or More Characters")
+                    Text("• At Least 1 Number")
+                    Text("• At Least 1 Special Character")
+                }
+                .padding(.leading)
+            }
+            .frame(maxWidth: 500, alignment: .leading)
         }
 //        .alert("Incorrect Password", isPresented: $isShowingIncorrectPassword) {
 //            Button("OK") {}
