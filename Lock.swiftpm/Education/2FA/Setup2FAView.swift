@@ -6,18 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 
 struct Setup2FAView: View {
+    let timer = UpsideDownAccuteTriangle.defaultTimer
+    
     var body: some View {
         VStack {
             Text("Setup 2 Factor Authentication")
                 .font(.title)
             
             ZStack {
-                UpsideDownAccuteTriangle(visibleSides: [.right])
-                UpsideDownAccuteTriangle(visibleSides: [.right])
-                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-                    .offset(x: 25, y: 0)
+                UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
+                    .environment(\.direction, .right)
+                UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
+                    .environment(\.direction, .left)
             }
                 .overlay(alignment: .topLeading) {
                     Image(systemName: "key.fill")
@@ -57,10 +60,14 @@ struct Setup2FAView: View {
 
 struct UpsideDownAccuteTriangle: View {
     let visibleSides: [Side]
+    let timer: Publishers.Autoconnect<Timer.TimerPublisher>
+    static let defaultTimer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
     
-    init(visibleSides: [Side] = Side.allCases) {
+    init(timer: Publishers.Autoconnect<Timer.TimerPublisher> = UpsideDownAccuteTriangle.defaultTimer, visibleSides: [Side] = Side.allCases) {
+        self.timer = timer
         self.visibleSides = visibleSides
     }
+    
     enum Side: CaseIterable {
         case top, right, left
     }
@@ -80,21 +87,21 @@ struct UpsideDownAccuteTriangle: View {
             
             ZStack {
                 // First Row
-                MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                MovingCircle(startingOffset: .init(width: width-(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                MovingCircle(startingOffset: .init(width: width-2*(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                MovingCircle(startingOffset: .init(width: width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                
+                MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+                MovingCircle(startingOffset: .init(width: width-(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+                MovingCircle(startingOffset: .init(width: width-2*(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+                MovingCircle(startingOffset: .init(width: width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+     
                 // Second Row
-                MovingCircle(startingOffset: .init(width: width-(width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                MovingCircle(startingOffset: .init(width: (width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                
+                MovingCircle(startingOffset: .init(width: width-(width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+                MovingCircle(startingOffset: .init(width: (width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+
                 // Third Row
-                MovingCircle(startingOffset: .init(width: width-2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
-                MovingCircle(startingOffset: .init(width: 2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: width-2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
+                MovingCircle(startingOffset: .init(width: 2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
                 
                 // Fourth Row
-                MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
             }
         }
         .frame(width: 250, height: 250)
@@ -105,12 +112,15 @@ struct UpsideDownAccuteTriangle: View {
         let topRightOffset: CGSize
         let bottonLeftOffset: CGSize
         let visibleSides: [Side]
+        @Environment(\.direction) var direction
+        let timer: Publishers.Autoconnect<Timer.TimerPublisher>
         
-        init(startingOffset: CGSize, topRightOffset: CGSize, bottonLeftOffset: CGSize, visibleSides: [Side] = Side.allCases) {
+        init(startingOffset: CGSize, topRightOffset: CGSize, bottonLeftOffset: CGSize, visibleSides: [Side] = Side.allCases, timer: Publishers.Autoconnect<Timer.TimerPublisher> = UpsideDownAccuteTriangle.defaultTimer) {
             self.startingOffset = startingOffset
             self.topRightOffset = topRightOffset
             self.bottonLeftOffset = bottonLeftOffset
             self.visibleSides = visibleSides
+            self.timer = timer
             
             self._currentOffset = .init(initialValue: startingOffset)
             
@@ -121,11 +131,11 @@ struct UpsideDownAccuteTriangle: View {
             } else {
                 self.side = .right
             }
+            setSide()
         }
         
         @State var currentOffset: CGSize
         @State var side: Side
-        let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
         
         var body: some View {
             Circle()
@@ -138,6 +148,15 @@ struct UpsideDownAccuteTriangle: View {
         }
         
         func moveCircle() {
+            switch direction {
+            case .right:
+                moveCircleRight()
+            case .left:
+                moveCircleLeft()
+            }
+        }
+        
+        func moveCircleRight() {
             switch side {
             case .top:
                 currentOffset.width += 0.1
@@ -151,20 +170,57 @@ struct UpsideDownAccuteTriangle: View {
             setSide()
         }
         
-        func setSide() {
-            if currentOffset.height <= 0 && currentOffset.width <= 0 {
-                currentOffset = .init(width: 0, height: 0)
+        func moveCircleLeft() {
+            switch side {
+            case .top:
+                currentOffset.width -= 0.1
+            case .right:
+                currentOffset.width += 0.05
+                currentOffset.height -= 0.1
+            case .left:
+                currentOffset.width += 0.05
+                currentOffset.height += 0.1
             }
-            
-            if currentOffset.height == 0 && currentOffset.width <= topRightOffset.width && currentOffset.width >= bottonLeftOffset.width {
-                self.side = .top
-            } else if currentOffset.width < topRightOffset.width/2 || currentOffset.height == bottonLeftOffset.height {
-                self.side = .left
-            } else {
-                self.side = .right
+            setSide()
+        }
+        
+        func setSide() {
+            switch direction {
+            case .left:
+                if currentOffset.height <= 0 && currentOffset.width >= topRightOffset.width {
+                    currentOffset = topRightOffset
+                }
+                
+                if currentOffset.height == 0 && currentOffset.width <= topRightOffset.width && currentOffset.width >= bottonLeftOffset.width {
+                    self.side = .top
+                } else if currentOffset.width > topRightOffset.width/2 || currentOffset.height == bottonLeftOffset.height {
+                    self.side = .right
+                } else {
+                    self.side = .left
+                }
+            case .right:
+                if currentOffset.height <= 0 && currentOffset.width <= 0 {
+                    currentOffset = .init(width: 0, height: 0)
+                }
+                
+                if currentOffset.height == 0 && currentOffset.width <= topRightOffset.width && currentOffset.width >= bottonLeftOffset.width {
+                    self.side = .top
+                } else if currentOffset.width < topRightOffset.width/2 || currentOffset.height == bottonLeftOffset.height {
+                    self.side = .left
+                } else {
+                    self.side = .right
+                }
             }
         }
     }
+}
+
+enum Direction {
+    case right, left
+}
+
+extension EnvironmentValues {
+    @Entry var direction = Direction.right
 }
 
 #Preview {
