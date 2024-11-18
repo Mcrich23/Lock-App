@@ -19,34 +19,35 @@ struct Setup2FAView: View {
 
 struct UpsideDownAccuteTriangle: View {
     func topRightOffset(_ geometrySize: CGSize) -> CGSize {
-        .init(width: 250, height: 0)
-//        .init(width: geometrySize.width, height: 0)
+        .init(width: geometrySize.width, height: 0)
     }
     
     func bottomLeftOffset(_ geometrySize: CGSize) -> CGSize {
-        .init(width: 0, height: 250)
-//        .init(width: 0, height: geometrySize.height-(geometrySize.height/6))
+        .init(width: 0, height: geometrySize.height)
     }
     
     var body: some View {
         GeometryReader { geo in
+            let width = geo.size.width
+            let height = geo.size.height
+            
             ZStack {
                 // First Row
                 MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: 83.3, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: 166.6, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: 250, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-2*(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Second Row
-                MovingCircle(startingOffset: .init(width: 250-41.65, height: 83.3), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: 41.65, height: 83.3), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-(width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: (width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Third Row
-                MovingCircle(startingOffset: .init(width: 250-(2*41.65), height: 166.6), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: (2*41.65), height: 166.6), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Fourth Row
-                MovingCircle(startingOffset: .init(width: 125, height: 250), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
             }
         }
         .frame(width: 250, height: 250)
