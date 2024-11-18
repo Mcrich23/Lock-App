@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class EductionNavigationController {
     enum ShownView: Int {
-        case poorPassword, createPassword
+        case poorPassword, createPassword, setup2FA
         
         mutating func next() {
             if let newValue = ShownView(rawValue: self.rawValue + 1) {
@@ -42,14 +42,17 @@ struct EducationNavigationView: View {
             case .createPassword:
                 CreatePasswordView()
                     .fillSpaceAvailable()
-//                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
                     .background(
                         Color(uiColor: colorScheme == .light ? .systemBackground: .secondarySystemBackground)
                             .ignoresSafeArea()
                         .environment(\.colorScheme, .dark)
                     )
                     .environment(\.colorScheme, .dark)
-                    .transition(.scale)
+                    .transition(.asymmetric(insertion: .scale, removal: .move(edge: .leading)))
+            case .setup2FA:
+                Setup2FAView()
+                    .fillSpaceAvailable()
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             }
         }
         .environment(educationNavigationController)

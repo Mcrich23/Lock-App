@@ -27,13 +27,15 @@ private enum PasswordStrength {
 }
 
 struct CreatePasswordView: View {
+    @Environment(EductionNavigationController.self) var navigationController
+    
+    // MARK: Animated Setup Vars
     @State var showSetupText1 = false
     @State var showSetupText2 = false
     @State var isShowingMainView = false
     
-    @Namespace var mainNamespace
-    
     @State var password = ""
+    @FocusState var isPasswordFieldFocused: Bool
     
     private var requirements: Array<Bool> {
         [
@@ -168,13 +170,15 @@ struct CreatePasswordView: View {
         VStack {
             HStack {
                 TextField("Enter your new password", text: $password.animation(.default))
+                    .onSubmit(setPassword)
+                    .focused($isPasswordFieldFocused)
                     .textFieldStyle(.custom)
                     .frame(maxWidth: 350)
                     .padding(.horizontal)
                     .textInputAutocapitalization(.never)
                     .padding(.trailing)
                 
-                Button("Enter", action: {})
+                Button("Enter", action: setPassword)
                     .buttonStyle(.borderedProminent)
                     .disabled(password.isEmpty)
             }
@@ -193,6 +197,17 @@ struct CreatePasswordView: View {
                 .padding(.leading)
             }
             .frame(maxWidth: 500, alignment: .leading)
+        }
+    }
+    
+    func setPassword() {
+        Task {
+            isPasswordFieldFocused = false
+            
+            try? await Task.sleep(for: .milliseconds(500))
+            withAnimation {
+                navigationController.shownView.next()
+            }
         }
     }
 }
