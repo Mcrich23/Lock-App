@@ -29,7 +29,7 @@ struct Setup2FAView: View {
                         .frame(width: 50, height: 50)
                         .foregroundStyle(Color.accentColor)
                         .background(Color(uiColor: .systemBackground))
-                        .offset(y: -12)
+                        .offset(x: -12, y: -12)
                 }
                 .overlay(alignment: .topTrailing) {
                     Image(systemName: "key.fill")
@@ -38,7 +38,7 @@ struct Setup2FAView: View {
                         .frame(width: 50, height: 50)
                         .foregroundStyle(Color.accentColor)
                         .background(Color(uiColor: .systemBackground))
-                        .offset(x: 25, y: -12)
+                        .offset(x: 20, y: -12)
                 }
                 .overlay(alignment: .bottom) {
                     Image(systemName: "lock.fill")
@@ -52,7 +52,7 @@ struct Setup2FAView: View {
                                 .clipShape(Circle())
                                 .offset(y: -12)
                         )
-                        .offset(x: 10, y: 25)
+                        .offset(x: 3, y: 30)
                 }
         }
     }
@@ -137,9 +137,21 @@ struct UpsideDownAccuteTriangle: View {
         @State var currentOffset: CGSize
         @State var side: Side
         
+        var rotation: Double {
+            switch side {
+            case .top:
+                return 90
+            case .left:
+                return -25
+            case .right:
+                return 25
+            }
+        }
+        
         var body: some View {
-            Circle()
-                .frame(width: 25, height: 25)
+            Rectangle()
+                .frame(width: 6, height: 30)
+                .rotationEffect(.degrees(rotation))
                 .offset(currentOffset)
                 .onReceive(timer) { _ in
                     moveCircle()
