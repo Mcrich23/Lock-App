@@ -12,7 +12,35 @@ struct Setup2FAView: View {
         VStack {
             Text("Setup 2 Factor Authentication")
                 .font(.title)
+            
             UpsideDownAccuteTriangle()
+                .overlay(alignment: .topLeading) {
+                    Image(systemName: "key.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50)
+                        .foregroundStyle(Color.accentColor)
+                        .background(Color(uiColor: .systemBackground))
+                        .offset(y: -12)
+                }
+                .overlay(alignment: .topTrailing) {
+                    Image(systemName: "key.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50)
+                        .foregroundStyle(Color.accentColor)
+                        .background(Color(uiColor: .systemBackground))
+                        .offset(x: 25, y: -12)
+                }
+                .overlay(alignment: .bottom) {
+                    Image(systemName: "lock.fill")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 50, height: 50)
+                        .foregroundStyle(Color.green)
+                        .background(Color(uiColor: .systemBackground))
+                        .offset(x: 10, y: 25)
+                }
         }
     }
 }
