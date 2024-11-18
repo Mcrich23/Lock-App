@@ -1,9 +1,13 @@
 import SwiftUI
 
 struct PoorPasswordView: View {
+    @Environment(EductionNavigationController.self) var navigationController
+    
     @State var password: String = ""
     @State var isShowingHint: Bool = false
     @State var isShowingIncorrectPassword = false
+    
+    @FocusState var isPasswordFieldFocused: Bool
     
     let correctPassword = "Password123"
     
@@ -19,9 +23,13 @@ struct PoorPasswordView: View {
             
             HStack {
                 TextField("Enter your password", text: $password)
+                    .onSubmit {
+                        checkPassword()
+                    }
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .scaleEffect(1.2)
                     .frame(maxWidth: 350)
+                    .focused($isPasswordFieldFocused)
                     .padding(.horizontal)
                     .textInputAutocapitalization(.never)
                     .overlay(alignment: .trailing) {
@@ -60,9 +68,15 @@ struct PoorPasswordView: View {
     }
     
     func checkPassword() {
+        isPasswordFieldFocused = false
+        
         guard password == correctPassword else {
             isShowingIncorrectPassword = true
             return
+        }
+        
+        withAnimation {
+            navigationController.shownView.next()
         }
     }
 }

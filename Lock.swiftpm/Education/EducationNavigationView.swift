@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-struct EducationNavigationView: View {
+@Observable
+class EductionNavigationController {
     enum ShownView: Int {
-        case poorPassword
+        case poorPassword, createPassword
         
         mutating func next() {
             if let newValue = ShownView(rawValue: self.rawValue + 1) {
@@ -24,15 +25,34 @@ struct EducationNavigationView: View {
         }
     }
     
-    @State var shownView: ShownView = .poorPassword
+    var shownView: ShownView = .poorPassword
+}
+
+struct EducationNavigationView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @State var educationNavigationController = EductionNavigationController()
     
     var body: some View {
-        switch shownView {
-        case .poorPassword:
-            PoorPasswordView()
-                .fillSpaceAvailable()
-                .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+        VStack {
+            switch educationNavigationController.shownView {
+            case .poorPassword:
+                PoorPasswordView()
+                    .fillSpaceAvailable()
+//                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+            case .createPassword:
+                CreatePasswordView()
+                    .fillSpaceAvailable()
+//                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                    .background(
+                        Color(uiColor: colorScheme == .light ? .systemBackground: .secondarySystemBackground)
+                            .ignoresSafeArea()
+                        .environment(\.colorScheme, .dark)
+                    )
+                    .environment(\.colorScheme, .dark)
+                    .transition(.scale)
+            }
         }
+        .environment(educationNavigationController)
     }
 }
 struct FillAllSpaceModifier: ViewModifier {

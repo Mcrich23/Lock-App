@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct CreatePasswordView: View {
+    @State var showSetupText1 = false
+    @State var showSetupText2 = false
+    @State var isShowingMainView = false
+    
+    @Namespace var mainNamespace
+    
     @State var password = ""
     
     private var requirements: Array<Bool> {
@@ -67,17 +73,33 @@ struct CreatePasswordView: View {
     
     var body: some View {
         VStack {
-            Image(topIcon)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 100, height: 100)
-                .symbolRenderingMode(password.isEmpty ? .monochrome : .multicolor)
-                .foregroundStyle(Color.accentColor)
-                .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
-            Text("Set a New Password")
-                .font(.title)
+            if isShowingMainView {
+                Image(topIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 100, height: 100)
+                    .symbolRenderingMode(password.isEmpty ? .monochrome : .multicolor)
+                    .foregroundStyle(Color.accentColor)
+                    .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
+            }
+            ZStack {
+                    Text("Create a New Password")
+                        .font(.title)
+                        .opacity(isShowingMainView ? 1 : 0)
+                    VStack {
+                        Text("Woah! That was an easy one.")
+                            .opacity(showSetupText1 ? 1 : 0)
+                        
+                        Text("Let's make something a bit more secure.")
+                            .opacity(showSetupText2 ? 1 : 0)
+                        
+                    }
+                    .opacity(isShowingMainView ? 0 : 1)
+            }
+            .multilineTextAlignment(.center)
+            .frame(alignment: .center)
             
-            if !password.isEmpty {
+            if !password.isEmpty && isShowingMainView {
                 HStack {
                     ProgressView(value: requirementsBarValue, total: Double(requirements.count)) {
                         //                    Text("Valid")
@@ -92,32 +114,48 @@ struct CreatePasswordView: View {
                 }
             }
             
-            HStack {
-                TextField("Enter your new password", text: $password.animation(.default))
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .scaleEffect(1.2)
-                    .frame(maxWidth: 350)
-                    .padding(.horizontal)
-                    .textInputAutocapitalization(.never)
-                    .padding(.trailing)
-                
-                Button("Enter", action: {})
-                    .buttonStyle(.borderedProminent)
-                    .disabled(password.isEmpty)
-            }
-            
-            VStack(alignment: .leading) {
-                Text("Should Include:")
-                    .font(.title2)
-                    .bold()
-                VStack(alignment: .leading) {
-                    Text("• 7 or More Characters")
-                    Text("• At Least 1 Number")
-                    Text("• At Least 1 Special Character")
+            if isShowingMainView {
+                HStack {
+                    TextField("Enter your new password", text: $password.animation(.default))
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .scaleEffect(1.2)
+                        .frame(maxWidth: 350)
+                        .padding(.horizontal)
+                        .textInputAutocapitalization(.never)
+                        .padding(.trailing)
+                    
+                    Button("Enter", action: {})
+                        .buttonStyle(.borderedProminent)
+                        .disabled(password.isEmpty)
                 }
-                .padding(.leading)
+                
+                VStack(alignment: .leading) {
+                    Text("Should Include:")
+                        .font(.title2)
+                        .bold()
+                    VStack(alignment: .leading) {
+                        Text("• 7 or More Characters")
+                        Text("• At Least 1 Number")
+                        Text("• At Least 1 Special Character")
+                    }
+                    .padding(.leading)
+                }
+                .frame(maxWidth: 500, alignment: .leading)
             }
-            .frame(maxWidth: 500, alignment: .leading)
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(1))
+            withAnimation {
+                showSetupText1 = true
+            }
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                showSetupText2 = true
+            }
+            try? await Task.sleep(for: .seconds(3))
+            withAnimation(.default.speed(0.5)) {
+                isShowingMainView = true
+            }
         }
 //        .alert("Incorrect Password", isPresented: $isShowingIncorrectPassword) {
 //            Button("OK") {}
