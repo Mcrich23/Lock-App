@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "Pass",
+    name: "Lock",
     platforms: [
         .iOS("18.0")
     ],
     products: [
         .iOSApplication(
-            name: "Pass",
+            name: "Lock",
             targets: ["AppModule"],
             bundleIdentifier: "com.Mcrich.Pass",
             teamIdentifier: "L7JQRVXU2V",
@@ -40,5 +40,5 @@ let package = Package(
             path: "."
         )
     ],
-    swiftLanguageVersions: [.v6]
+    swiftLanguageVersions: [.version("6")]
 )
