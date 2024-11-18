@@ -44,7 +44,7 @@ struct UpsideDownAccuteTriangle: View {
                 MovingCircle(startingOffset: .init(width: geo.size.width-2.4*(geo.size.width/3.5), height: geo.size.height-(geo.size.height/2.2)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Fourth Row
-                MovingCircle(startingOffset: .init(width: geo.size.width-0.99*(geo.size.width/2), height: geo.size.height-(geo.size.height/6.3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: geo.size.width-0.99*(geo.size.width/2), height: geo.size.height-(geo.size.height/6)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
             }
         }
         .frame(width: 250, height: 250)
