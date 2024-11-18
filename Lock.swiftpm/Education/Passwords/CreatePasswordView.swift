@@ -17,11 +17,11 @@ struct CreatePasswordView: View {
     @State var password = ""
     
     private var requirements: Array<Bool> {
-      [
-        password.count >= 7, // Minimum Length
-        password.contains(where: { $0.isNumber }), // One Number
-        password.range(of: "[ !\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~]+", options: .regularExpression) != nil // One Special Character
-      ]
+        [
+            password.count >= 7, // Minimum Length
+            password.contains(where: { $0.isNumber }), // One Number
+            password.range(of: "[ !\"#$%&'()*+,-./:;<=>?@\\[\\\\\\]^_`{|}~]+", options: .regularExpression) != nil // One Special Character
+        ]
     }
     
     private var requirementsBarValue: Double {
@@ -74,27 +74,21 @@ struct CreatePasswordView: View {
     var body: some View {
         VStack {
             if isShowingMainView {
-                Image(topIcon)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 100, height: 100)
-                    .symbolRenderingMode(password.isEmpty ? .monochrome : .multicolor)
-                    .foregroundStyle(Color.accentColor)
-                    .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
+                topIconView
             }
             ZStack {
-                    Text("Create a New Password")
-                        .font(.title)
-                        .opacity(isShowingMainView ? 1 : 0)
-                    VStack {
-                        Text("Woah! That was an easy one.")
-                            .opacity(showSetupText1 ? 1 : 0)
-                        
-                        Text("Let's make something a bit more secure.")
-                            .opacity(showSetupText2 ? 1 : 0)
-                        
-                    }
-                    .opacity(isShowingMainView ? 0 : 1)
+                Text("Create a New Password")
+                    .font(.title)
+                    .opacity(isShowingMainView ? 1 : 0)
+                VStack {
+                    Text("Woah! That was an easy one.")
+                        .opacity(showSetupText1 ? 1 : 0)
+                    
+                    Text("Let's make something a bit more secure.")
+                        .opacity(showSetupText2 ? 1 : 0)
+                }
+                .font(.title3)
+                .opacity(isShowingMainView ? 0 : 1)
             }
             .multilineTextAlignment(.center)
             .frame(alignment: .center)
@@ -115,32 +109,7 @@ struct CreatePasswordView: View {
             }
             
             if isShowingMainView {
-                HStack {
-                    TextField("Enter your new password", text: $password.animation(.default))
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .scaleEffect(1.2)
-                        .frame(maxWidth: 350)
-                        .padding(.horizontal)
-                        .textInputAutocapitalization(.never)
-                        .padding(.trailing)
-                    
-                    Button("Enter", action: {})
-                        .buttonStyle(.borderedProminent)
-                        .disabled(password.isEmpty)
-                }
-                
-                VStack(alignment: .leading) {
-                    Text("Should Include:")
-                        .font(.title2)
-                        .bold()
-                    VStack(alignment: .leading) {
-                        Text("• 7 or More Characters")
-                        Text("• At Least 1 Number")
-                        Text("• At Least 1 Special Character")
-                    }
-                    .padding(.leading)
-                }
-                .frame(maxWidth: 500, alignment: .leading)
+                setPasswordView
             }
         }
         .task {
@@ -157,11 +126,46 @@ struct CreatePasswordView: View {
                 isShowingMainView = true
             }
         }
-//        .alert("Incorrect Password", isPresented: $isShowingIncorrectPassword) {
-//            Button("OK") {}
-//        } message: {
-//            Text("Check the hint")
-//        }
+    }
+    
+    var topIconView: some View {
+        Image(topIcon)
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 100, height: 100)
+            .symbolRenderingMode(password.isEmpty ? .monochrome : .multicolor)
+            .foregroundStyle(Color.accentColor)
+            .contentTransition(.symbolEffect(.replace.magic(fallback: .replace)))
+    }
+    
+    var setPasswordView: some View {
+        VStack {
+            HStack {
+                TextField("Enter your new password", text: $password.animation(.default))
+                    .textFieldStyle(.custom)
+                    .frame(maxWidth: 350)
+                    .padding(.horizontal)
+                    .textInputAutocapitalization(.never)
+                    .padding(.trailing)
+                
+                Button("Enter", action: {})
+                    .buttonStyle(.borderedProminent)
+                    .disabled(password.isEmpty)
+            }
+            
+            VStack(alignment: .leading) {
+                Text("Should Include:")
+                    .font(.title2)
+                    .bold()
+                VStack(alignment: .leading) {
+                    Text("• 7 or More Characters")
+                    Text("• At Least 1 Number")
+                    Text("• At Least 1 Special Character")
+                }
+                .padding(.leading)
+            }
+            .frame(maxWidth: 500, alignment: .leading)
+        }
     }
 }
 

@@ -26,8 +26,7 @@ struct PoorPasswordView: View {
                     .onSubmit {
                         checkPassword()
                     }
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .scaleEffect(1.2)
+                    .textFieldStyle(.custom)
                     .frame(maxWidth: 350)
                     .focused($isPasswordFieldFocused)
                     .padding(.horizontal)
