@@ -22,6 +22,7 @@ struct Setup2FAView: View {
                 UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
                     .environment(\.direction, .left)
             }
+            .frame(width: 150, height: 150)
                 .overlay(alignment: .topLeading) {
                     Image(systemName: "key.fill")
                         .resizable()
@@ -104,7 +105,6 @@ struct UpsideDownAccuteTriangle: View {
                 MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides, timer: timer)
             }
         }
-        .frame(width: 250, height: 250)
     }
     
     struct MovingCircle: View {
