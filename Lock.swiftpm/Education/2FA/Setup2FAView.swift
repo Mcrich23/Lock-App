@@ -19,11 +19,13 @@ struct Setup2FAView: View {
 
 struct UpsideDownAccuteTriangle: View {
     func topRightOffset(_ geometrySize: CGSize) -> CGSize {
-        .init(width: geometrySize.width, height: 0)
+        .init(width: 250, height: 0)
+//        .init(width: geometrySize.width, height: 0)
     }
     
     func bottomLeftOffset(_ geometrySize: CGSize) -> CGSize {
-        .init(width: 0, height: geometrySize.height)
+        .init(width: 0, height: 250)
+//        .init(width: 0, height: geometrySize.height-(geometrySize.height/6))
     }
     
     var body: some View {
@@ -31,20 +33,20 @@ struct UpsideDownAccuteTriangle: View {
             ZStack {
                 // First Row
                 MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: geo.size.width-geo.size.width/3, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: geo.size.width-2*(geo.size.width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: geo.size.width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 83.3, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 166.6, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 250, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Second Row
-                MovingCircle(startingOffset: .init(width: geo.size.width-0.5*(geo.size.width/3.5), height: geo.size.height-(geo.size.height/1.4)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: geo.size.width-3*(geo.size.width/3.5), height: geo.size.height-(geo.size.height/1.4)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 250-41.65, height: 83.3), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 41.65, height: 83.3), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Third Row
-                MovingCircle(startingOffset: .init(width: geo.size.width-1.1*(geo.size.width/3.5), height: geo.size.height-(geo.size.height/2.2)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: geo.size.width-2.4*(geo.size.width/3.5), height: geo.size.height-(geo.size.height/2.2)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 250-(2*41.65), height: 166.6), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: (2*41.65), height: 166.6), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
                 
                 // Fourth Row
-                MovingCircle(startingOffset: .init(width: geo.size.width-0.99*(geo.size.width/2), height: geo.size.height-(geo.size.height/6)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 125, height: 250), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
             }
         }
         .frame(width: 250, height: 250)
@@ -59,12 +61,61 @@ struct UpsideDownAccuteTriangle: View {
             self.startingOffset = startingOffset
             self.topRightOffset = topRightOffset
             self.bottonLeftOffset = bottonLeftOffset
+            
+            self._currentOffset = .init(initialValue: startingOffset)
+            
+            if startingOffset.height == 0 && startingOffset.width != topRightOffset.width && startingOffset.width != bottonLeftOffset.width {
+                self.side = .top
+            } else if startingOffset.width < topRightOffset.width/2 || startingOffset.height == bottonLeftOffset.height {
+                self.side = .left
+            } else {
+                self.side = .right
+            }
+        }
+        
+        @State var currentOffset: CGSize
+        @State var side: Side
+        let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+        
+        enum Side {
+            case top, right, left
         }
         
         var body: some View {
             Circle()
                 .frame(width: 25, height: 25)
-                .offset(startingOffset)
+                .offset(currentOffset)
+                .onReceive(timer) { _ in
+                    moveCircle()
+                }
+        }
+        
+        func moveCircle() {
+            switch side {
+            case .top:
+                currentOffset.width += 0.1
+            case .right:
+                currentOffset.width -= 0.05
+                currentOffset.height += 0.1
+            case .left:
+                currentOffset.width -= 0.05
+                currentOffset.height -= 0.1
+            }
+            setSide()
+        }
+        
+        func setSide() {
+            if currentOffset.height <= 0 && currentOffset.width <= 0 {
+                currentOffset = .init(width: 0, height: 0)
+            }
+            
+            if currentOffset.height == 0 && currentOffset.width <= topRightOffset.width && currentOffset.width >= bottonLeftOffset.width {
+                self.side = .top
+            } else if currentOffset.width < topRightOffset.width/2 || currentOffset.height == bottonLeftOffset.height {
+                self.side = .left
+            } else {
+                self.side = .right
+            }
         }
     }
 }
