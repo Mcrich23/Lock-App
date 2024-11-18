@@ -13,7 +13,12 @@ struct Setup2FAView: View {
             Text("Setup 2 Factor Authentication")
                 .font(.title)
             
-            UpsideDownAccuteTriangle()
+            ZStack {
+                UpsideDownAccuteTriangle(visibleSides: [.right])
+                UpsideDownAccuteTriangle(visibleSides: [.right])
+                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
+                    .offset(x: 25, y: 0)
+            }
                 .overlay(alignment: .topLeading) {
                     Image(systemName: "key.fill")
                         .resizable()
@@ -38,7 +43,12 @@ struct Setup2FAView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 50, height: 50)
                         .foregroundStyle(Color.green)
-                        .background(Color(uiColor: .systemBackground))
+                        .background(
+                            Color(uiColor: .systemBackground)
+                                .frame(width: 25, height: 25)
+                                .clipShape(Circle())
+                                .offset(y: -12)
+                        )
                         .offset(x: 10, y: 25)
                 }
         }
@@ -46,6 +56,15 @@ struct Setup2FAView: View {
 }
 
 struct UpsideDownAccuteTriangle: View {
+    let visibleSides: [Side]
+    
+    init(visibleSides: [Side] = Side.allCases) {
+        self.visibleSides = visibleSides
+    }
+    enum Side: CaseIterable {
+        case top, right, left
+    }
+    
     func topRightOffset(_ geometrySize: CGSize) -> CGSize {
         .init(width: geometrySize.width, height: 0)
     }
@@ -61,21 +80,21 @@ struct UpsideDownAccuteTriangle: View {
             
             ZStack {
                 // First Row
-                MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: width-(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: width-2*(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: 0, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: width-(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: width-2*(width/3), height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: width, height: 0), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
                 
                 // Second Row
-                MovingCircle(startingOffset: .init(width: width-(width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: (width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-(width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: (width/6), height: height-2*(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
                 
                 // Third Row
-                MovingCircle(startingOffset: .init(width: width-2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
-                MovingCircle(startingOffset: .init(width: 2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width-2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
+                MovingCircle(startingOffset: .init(width: 2*(width/6), height: height-(height/3)), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
                 
                 // Fourth Row
-                MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size))
+                MovingCircle(startingOffset: .init(width: width/2, height: height), topRightOffset: topRightOffset(geo.size), bottonLeftOffset: bottomLeftOffset(geo.size), visibleSides: visibleSides)
             }
         }
         .frame(width: 250, height: 250)
@@ -85,11 +104,13 @@ struct UpsideDownAccuteTriangle: View {
         let startingOffset: CGSize
         let topRightOffset: CGSize
         let bottonLeftOffset: CGSize
+        let visibleSides: [Side]
         
-        init(startingOffset: CGSize, topRightOffset: CGSize, bottonLeftOffset: CGSize) {
+        init(startingOffset: CGSize, topRightOffset: CGSize, bottonLeftOffset: CGSize, visibleSides: [Side] = Side.allCases) {
             self.startingOffset = startingOffset
             self.topRightOffset = topRightOffset
             self.bottonLeftOffset = bottonLeftOffset
+            self.visibleSides = visibleSides
             
             self._currentOffset = .init(initialValue: startingOffset)
             
@@ -106,10 +127,6 @@ struct UpsideDownAccuteTriangle: View {
         @State var side: Side
         let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
         
-        enum Side {
-            case top, right, left
-        }
-        
         var body: some View {
             Circle()
                 .frame(width: 25, height: 25)
@@ -117,6 +134,7 @@ struct UpsideDownAccuteTriangle: View {
                 .onReceive(timer) { _ in
                     moveCircle()
                 }
+                .opacity(visibleSides.contains(side) ? 1 : 0)
         }
         
         func moveCircle() {
