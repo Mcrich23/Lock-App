@@ -12,17 +12,26 @@ struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     
     var body: some View {
-        VStack {
-            Text("Setup 2 Factor Authentication")
-                .font(.title)
-            
-            ZStack {
-                UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
-                    .environment(\.direction, .right)
-                UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
-                    .environment(\.direction, .left)
-            }
-            .frame(width: 150, height: 150)
+        NavigationStack {
+            VStack {
+                Text("Setup 2 Factor Authentication")
+                    .font(.title)
+                    .bold()
+                
+                VStack(alignment: .leading) {
+                    Text("2 Factor Authentication (2FA) is a way to add an extra layer of security to your account. It allows you to hold a second part of login that you can use to verify your identity. This makes it harder for someone to gain access to your account if they know your password.")
+                }
+                .padding(.top, 1)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: 600, alignment: .leading)
+                
+                ZStack {
+                    UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
+                        .environment(\.direction, .right)
+                    UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
+                        .environment(\.direction, .left)
+                }
+                .frame(width: 200, height: 200)
                 .overlay(alignment: .topLeading) {
                     Image(systemName: "key.fill")
                         .resizable()
@@ -55,11 +64,60 @@ struct Setup2FAView: View {
                         )
                         .offset(x: 3, y: 30)
                 }
+                .scaleEffect(0.7)
+            }
+            
+            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "Text Message", description: "Send a your phone a text message containing the 2FA code") {
+                Text("Setup SMS Message")
+            }
+            
+            MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Have a rotating set of codes displayed on your phone inside an authenticator app") {
+                Text("Setup Authenticator App")
+            }
+            
+            MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID") {
+                Text("Setup Passkeys")
+            }
         }
     }
 }
 
-struct UpsideDownAccuteTriangle: View {
+private struct MFANavigationLink<Content: View>: View {
+    let image: Image
+    let title: String
+    let description: String?
+    @ViewBuilder var destination: Content
+    @Namespace var namespace
+    
+    var body: some View {
+        GroupBox {
+            NavigationLink {
+                destination
+                    .navigationTransition(.zoom(sourceID: "auth", in: namespace))
+            } label: {
+                HStack(spacing: 20) {
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxHeight: 40)
+                    
+                    VStack(alignment: .leading) {
+                        Text(title)
+                            .font(.headline)
+                        if let description {
+                            Text(description)
+                                .foregroundStyle(Color.primary)
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: 700, alignment: .leading)
+        }
+        .matchedTransitionSource(id: "auth", in: namespace)
+    }
+}
+
+private struct UpsideDownAccuteTriangle: View {
     let visibleSides: [Side]
     let timer: Publishers.Autoconnect<Timer.TimerPublisher>
     static let defaultTimer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
@@ -131,7 +189,6 @@ struct UpsideDownAccuteTriangle: View {
             } else {
                 self.side = .right
             }
-            setSide()
         }
         
         @State var currentOffset: CGSize
@@ -153,6 +210,7 @@ struct UpsideDownAccuteTriangle: View {
                 .frame(width: 6, height: 30)
                 .rotationEffect(.degrees(rotation))
                 .offset(currentOffset)
+                .onAppear(perform: setSide)
                 .onReceive(timer) { _ in
                     moveCircle()
                 }
