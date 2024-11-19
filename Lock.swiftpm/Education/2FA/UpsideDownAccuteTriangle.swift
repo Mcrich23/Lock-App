@@ -11,7 +11,7 @@ import Combine
 struct UpsideDownAccuteTriangle: View {
     let visibleSides: [Side]
     let timer: Publishers.Autoconnect<Timer.TimerPublisher>
-    static let defaultTimer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+    static let defaultTimer = Timer.publish(every: 0.003, on: .main, in: .common).autoconnect()
     
     init(timer: Publishers.Autoconnect<Timer.TimerPublisher> = UpsideDownAccuteTriangle.defaultTimer, visibleSides: [Side] = Side.allCases) {
         self.timer = timer

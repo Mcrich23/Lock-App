@@ -24,50 +24,11 @@ struct Setup2FAView: View {
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: 600, alignment: .leading)
                 
-                ZStack {
-                    UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
-                        .environment(\.direction, .right)
-                    UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
-                        .environment(\.direction, .left)
-                }
-                .frame(width: 200, height: 200)
-                .overlay(alignment: .topLeading) {
-                    Image(systemName: "key.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                        .foregroundStyle(Color.accentColor)
-                        .background(Color(uiColor: .systemBackground))
-                        .offset(x: -12, y: -12)
-                }
-                .overlay(alignment: .topTrailing) {
-                    Image(systemName: "key.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                        .foregroundStyle(Color.accentColor)
-                        .background(Color(uiColor: .systemBackground))
-                        .offset(x: 20, y: -12)
-                }
-                .overlay(alignment: .bottom) {
-                    Image(systemName: "lock.fill")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
-                        .foregroundStyle(Color.green)
-                        .background(
-                            Color(uiColor: .systemBackground)
-                                .frame(width: 25, height: 25)
-                                .clipShape(Circle())
-                                .offset(y: -12)
-                        )
-                        .offset(x: 3, y: 30)
-                }
-                .scaleEffect(0.7)
+                mfaGraphic
             }
             
             MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code") {
-                Text("Setup SMS Message")
+                SMSEducationView()
             }
             
             MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Have a rotating set of codes displayed on your phone inside an authenticator app") {
@@ -78,6 +39,49 @@ struct Setup2FAView: View {
                 Text("Setup Passkeys")
             }
         }
+    }
+    
+    var mfaGraphic: some View {
+        ZStack {
+            UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
+                .environment(\.direction, .right)
+            UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
+                .environment(\.direction, .left)
+        }
+        .frame(width: 200, height: 200)
+        .overlay(alignment: .topLeading) {
+            Image(systemName: "key.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.accentColor)
+                .background(Color(uiColor: .systemBackground))
+                .offset(x: -12, y: -12)
+        }
+        .overlay(alignment: .topTrailing) {
+            Image(systemName: "key.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.accentColor)
+                .background(Color(uiColor: .systemBackground))
+                .offset(x: 20, y: -12)
+        }
+        .overlay(alignment: .bottom) {
+            Image(systemName: "lock.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.green)
+                .background(
+                    Color(uiColor: .systemBackground)
+                        .frame(width: 25, height: 25)
+                        .clipShape(Circle())
+                        .offset(y: -12)
+                )
+                .offset(x: 3, y: 30)
+        }
+        .scaleEffect(0.7)
     }
 }
 
