@@ -13,12 +13,12 @@ struct Setup2FAView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Setup 2 Factor Authentication")
+                Text("Setup Multi-Factor Authentication")
                     .font(.title)
                     .bold()
                 
                 VStack(alignment: .leading) {
-                    Text("2 Factor Authentication (2FA) is a way to add an extra layer of security to your account. It allows you to hold a second part of login that you can use to verify your identity. This makes it harder for someone to gain access to your account if they know your password.")
+                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. It allows you to hold a second part of login that you can use to verify your identity. This makes it harder for someone to gain access to your account if they know your password.")
                 }
                 .padding(.top, 1)
                 .multilineTextAlignment(.leading)
@@ -66,7 +66,7 @@ struct Setup2FAView: View {
                 .scaleEffect(0.7)
             }
             
-            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "Text Message", description: "Send a your phone a text message containing the 2FA code") {
+            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code") {
                 Text("Setup SMS Message")
             }
             
