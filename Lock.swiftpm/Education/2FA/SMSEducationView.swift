@@ -41,8 +41,8 @@ struct SMSEducationView: View {
                 .frame(maxWidth: 755, alignment: .leading)
             smsCodeHackerGraphic
                 .padding(.top, 15)
-                .padding(.bottom, 60)
-                .padding(.bottom)
+//                .padding(.bottom, 60)
+//                .padding(.bottom)
             
             Spacer()
         }
@@ -60,17 +60,27 @@ struct SMSEducationView: View {
                         @Bindable var setup2FAController = setup2FAController
                         TextField("Enter Code", text: $setup2FAController.smsCodeText)
                             .keyboardType(.numberPad)
-                            .textFieldStyle(.custom)
+                            .textFieldStyle(.roundedBorder)
                             .onSubmit(checkCode)
                             .focused($isEnteringCode)
                             .frame(maxWidth: 150)
-                            .padding(.trailing, 15)
+                            .padding(.trailing, 5)
                         Button("Enter", action: checkCode)
                             .buttonStyle(.borderedProminent)
+                            .buttonBorderShape(.roundedRectangle(radius: 6))
+                            .background(
+                                Color(uiColor: .systemBackground)
+                                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                            )
                             .background(alignment: setup2FAController.completedSms ? .trailing : .center) {
                                 Button("Reset", action: reset)
                                     .fixedSize()
                                     .buttonStyle(.bordered)
+                                    .buttonBorderShape(.roundedRectangle(radius: 6))
+                                    .background(
+                                        Color(uiColor: .systemBackground)
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                                    )
                                     .opacity(setup2FAController.completedSms ? 1 : 0)
                                     .offset(x: setup2FAController.completedSms ? 75 : 0)
                             }
@@ -87,6 +97,7 @@ struct SMSEducationView: View {
                 }
             }
             .padding(.vertical)
+            .padding(.bottom)
         })
         .alert("Incorrect Code", isPresented: $isShowingIncorrectCodeAlert) {
             Button("Ok") {}
@@ -155,23 +166,23 @@ struct SMSEducationView: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 50, height: 50)
+                    .frame(width: 40, height: 40)
                     .symbolRenderingMode(.multicolor)
-                    .offset(x: -15, y: 15)
+                    .offset(x: -15, y: 10)
             }
             .overlay(alignment: .bottom) {
                 Image(systemName: "person.badge.shield.exclamationmark")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 77, height: 77)
+//                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 60, height: 67)
                     .foregroundStyle(Color.red)
                     .background(
                         Color(uiColor: .systemBackground)
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
-                            .offset(x: -8, y: -10)
+                            .offset(x: -8, y: 20)
                     )
-                    .offset(x: 13, y: 68)
+                    .offset(x: 10, y: 35)
             }
     }
     
