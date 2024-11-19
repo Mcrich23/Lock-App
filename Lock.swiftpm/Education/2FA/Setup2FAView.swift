@@ -62,6 +62,10 @@ struct MFAEducationIntroView: View {
 
 private struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
+    @State var isShowingMFAGraphic: Bool = false
+    @State var isShowingMFA1: Bool = false
+    @State var isShowingMFA2: Bool = false
+    @State var isShowingMFA3: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -78,18 +82,40 @@ private struct Setup2FAView: View {
                 .frame(maxWidth: 600, alignment: .leading)
                 
                 mfaGraphic
+                    .opacity(isShowingMFAGraphic ? 1 : 0)
             }
             
             MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code") {
                 SMSEducationView()
             }
+            .opacity(isShowingMFA1 ? 1 : 0)
             
             MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Have a rotating set of codes displayed on your phone inside an authenticator app") {
                 Text("Setup Authenticator App")
             }
+            .opacity(isShowingMFA2 ? 1 : 0)
             
             MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID") {
                 Text("Setup Passkeys")
+            }
+            .opacity(isShowingMFA3 ? 1 : 0)
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                isShowingMFAGraphic = true
+            }
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                isShowingMFA1 = true
+            }
+            try? await Task.sleep(for: .milliseconds(750))
+            withAnimation {
+                isShowingMFA2 = true
+            }
+            try? await Task.sleep(for: .milliseconds(750))
+            withAnimation {
+                isShowingMFA3 = true
             }
         }
     }
