@@ -47,7 +47,7 @@ struct SMSEducationView: View {
         .overlay(alignment: .top) {
             NotificationAlertView(title: "81961", subtitle: "Your SMS Code is: \(smsCode). Don't share it with anyone.", time: "Now")
                 .shadow(radius: 10, y: 3)
-                .offset(y: setup2FAController.smsIsShowingNotification ? 0 : -160)
+                .offset(y: setup2FAController.smsIsShowingNotification ? 0 : -180)
         }
         .ignoresSafeArea(.keyboard)
         .overlay(alignment: .bottom, content: {
