@@ -7,7 +7,60 @@
 
 import SwiftUI
 
-struct Setup2FAView: View {
+struct MFAEductionView: View {
+    let isShowingMFA: Bool
+    @State var isShowingMainView: Bool = false
+    
+    var body: some View {
+        if isShowingMainView {
+            Setup2FAView()
+                .transition(.blurReplace)
+        } else {
+            MFAEducationIntroView(isShowingMainView: $isShowingMainView, isShowingMFA: isShowingMFA)
+                .transition(.blurReplace)
+        }
+    }
+}
+
+struct MFAEducationIntroView: View {
+    @State var showSetupText1 = false
+    @State var showSetupText2 = false
+    @Binding var isShowingMainView: Bool
+    let isShowingMFA: Bool
+    
+    var body: some View {
+        VStack {
+            Image(systemName: "person.badge.shield.exclamationmark")
+                .resizable()
+                .frame(width: 75, height: 75)
+                .foregroundStyle(Color.red)
+            Text("You were Hacked...")
+                .opacity(showSetupText1 ? 1 : 0)
+            Text("Lets Fix It")
+                .opacity(showSetupText2 ? 1 : 0)
+        }
+        .onChange(of: isShowingMFA, { oldValue, newValue in
+            guard newValue else { return }
+            
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                withAnimation {
+                    showSetupText1 = true
+                }
+                try? await Task.sleep(for: .seconds(2))
+                withAnimation {
+                    showSetupText2 = true
+                }
+                try? await Task.sleep(for: .seconds(2))
+                withAnimation(.default.speed(0.5)) {
+                    isShowingMainView = true
+                }
+            }
+        })
+    }
+}
+
+private struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     
     var body: some View {
@@ -41,7 +94,7 @@ struct Setup2FAView: View {
         }
     }
     
-    var mfaGraphic: some View {
+    private var mfaGraphic: some View {
         ZStack {
             UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
                 .environment(\.direction, .right)

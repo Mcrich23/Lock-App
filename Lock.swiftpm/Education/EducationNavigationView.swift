@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class EductionNavigationController {
     enum ShownView: Int {
-        case poorPassword, createPassword, setup2FA
+        case poorPassword, createPasswordSetupMFA
         
         mutating func next() {
             if let newValue = ShownView(rawValue: self.rawValue + 1) {
@@ -29,8 +29,8 @@ class EductionNavigationController {
 }
 
 struct EducationNavigationView: View {
-    @Environment(\.colorScheme) var colorScheme
     @State var educationNavigationController = EductionNavigationController()
+    @State var setup2FaFlipDegrees: Double = 0
     
     var body: some View {
         VStack {
@@ -39,25 +39,65 @@ struct EducationNavigationView: View {
                 PoorPasswordView()
                     .fillSpaceAvailable()
 //                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-            case .createPassword:
-                CreatePasswordView()
-                    .fillSpaceAvailable()
-                    .background(
-                        Color(uiColor: colorScheme == .light ? .systemBackground: .secondarySystemBackground)
-                            .ignoresSafeArea()
-                        .environment(\.colorScheme, .dark)
-                    )
-                    .environment(\.colorScheme, .dark)
+            case .createPasswordSetupMFA:
+                CreatePasswordSetupMFA()
                     .transition(.asymmetric(insertion: .scale, removal: .move(edge: .leading)))
-            case .setup2FA:
-                Setup2FAView()
-                    .fillSpaceAvailable()
-                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             }
         }
         .environment(educationNavigationController)
     }
 }
+
+struct HorizontalRotation3DViewModifier: ViewModifier {
+    let baseAngle: Angle
+    
+    init(baseAngle: Angle) {
+        self.baseAngle = baseAngle
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(baseAngle, axis: (x: 0, y: 1, z: 0))
+    }
+}
+
+extension AnyTransition {
+    @MainActor
+    static var flip: Self {
+        .modifier(
+            active: HorizontalRotation3DViewModifier(baseAngle: .degrees(180)),
+            identity: HorizontalRotation3DViewModifier(baseAngle: .degrees(0))
+        )
+    }
+}
+
+struct CreatePasswordSetupMFA: View {
+    @State var isShowingMFA: Bool = false
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        FlipView(showBack: $isShowingMFA) {
+            CreatePasswordView(nextAction: showMFA)
+                .fillSpaceAvailable()
+                .background(
+                    Color(uiColor: colorScheme == .light ? .systemBackground: .secondarySystemBackground)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea()
+                    .environment(\.colorScheme, .dark)
+                )
+                .environment(\.colorScheme, .dark)
+        } backView: {
+            MFAEductionView(isShowingMFA: isShowingMFA)
+        }
+    }
+    
+    func showMFA() {
+        withAnimation(.smooth.speed(0.3)) {
+            isShowingMFA = true
+        }
+    }
+}
+
 struct FillAllSpaceModifier: ViewModifier {
     func body(content: Content) -> some View {
         VStack {

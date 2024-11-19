@@ -27,6 +27,7 @@ private enum PasswordStrength {
 }
 
 struct CreatePasswordView: View {
+    let nextAction: () -> Void
     @Environment(EductionNavigationController.self) var navigationController
     
     // MARK: Animated Setup Vars
@@ -205,15 +206,13 @@ struct CreatePasswordView: View {
             isPasswordFieldFocused = false
             
             try? await Task.sleep(for: .milliseconds(500))
-            withAnimation {
-                navigationController.shownView.next()
-            }
+            nextAction()
         }
     }
 }
 
 #Preview {
-    CreatePasswordView()
+    CreatePasswordView(nextAction: {})
 }
 
 extension String {
