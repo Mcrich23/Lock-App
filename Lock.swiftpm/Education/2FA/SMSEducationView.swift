@@ -12,12 +12,12 @@ struct SMSEducationView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     let smsCode = "110843"
     @Namespace var namespace
+    @Namespace var keyboardNamespace
     @Environment(\.dismiss) var dismiss
     @State var isShowingIncorrectCodeAlert = false
+    @FocusState var isEnteringCode: Bool
     
     var body: some View {
-        @Bindable var setup2FAController = setup2FAController
-        
         VStack {
             Spacer()
             Text("Multi-Factor Authentication: SMS Text Message")
@@ -41,12 +41,24 @@ struct SMSEducationView: View {
                 .padding(.bottom, 60)
                 .padding(.bottom)
             
+            Spacer()
+        }
+        .frame(maxWidth: 800)
+        .overlay(alignment: .top) {
+            NotificationAlertView(title: "81961", subtitle: "Your SMS Code is: \(smsCode). Don't share it with anyone.", time: "Now")
+                .shadow(radius: 10, y: 3)
+                .offset(y: setup2FAController.smsIsShowingNotification ? 0 : -160)
+        }
+        .ignoresSafeArea(.keyboard)
+        .overlay(alignment: .bottom, content: {
             if setup2FAController.smsIsShowingNotification {
                 HStack {
+                    @Bindable var setup2FAController = setup2FAController
                     TextField("Enter Code", text: $setup2FAController.smsCodeText)
                         .keyboardType(.numberPad)
                         .textFieldStyle(.custom)
                         .onSubmit(checkCode)
+                        .focused($isEnteringCode)
                         .frame(maxWidth: 150)
                         .padding(.trailing, 15)
                     Button("Enter", action: checkCode)
@@ -62,20 +74,13 @@ struct SMSEducationView: View {
                 .buttonStyle(.bordered)
                 .matchedGeometryEffect(id: "smsCode", in: namespace)
             }
-            
-            Spacer()
-        }
-        .frame(maxWidth: 800)
-        .overlay(alignment: .top) {
-            NotificationAlertView(title: "81961", subtitle: "Your SMS Code is: \(smsCode). Don't share it with anyone.", time: "Now")
-                .shadow(radius: 10, y: 3)
-                .offset(y: setup2FAController.smsIsShowingNotification ? -20 : -160)
-        }
+        })
         .alert("Incorrect Code", isPresented: $isShowingIncorrectCodeAlert) {
             Button("Ok") {}
         } message: {
             Text("Please enter the correct code.")
         }
+        .padding()
     }
     
     var smsCodeGraphic: some View {
