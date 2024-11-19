@@ -67,6 +67,13 @@ struct SMSEducationView: View {
                             .padding(.trailing, 15)
                         Button("Enter", action: checkCode)
                             .buttonStyle(.borderedProminent)
+                            .background(alignment: setup2FAController.completedSms ? .trailing : .center) {
+                                Button("Reset", action: reset)
+                                    .fixedSize()
+                                    .buttonStyle(.bordered)
+                                    .opacity(setup2FAController.completedSms ? 1 : 0)
+                                    .offset(x: setup2FAController.completedSms ? 75 : 0)
+                            }
                     }
                     .matchedGeometryEffect(id: "smsCode", in: namespace)
                 } else {
@@ -174,11 +181,22 @@ struct SMSEducationView: View {
             return
         }
         
-        setup2FAController.completedSms = true
+        withAnimation {
+            setup2FAController.completedSms = true
+        }
         dismiss()
+    }
+    
+    func reset() {
+        withAnimation {
+            setup2FAController.smsCodeText = ""
+            setup2FAController.smsIsShowingNotification = false
+            setup2FAController.completedSms = false
+        }
     }
 }
 
 #Preview {
     SMSEducationView()
+        .environment(Setup2FAController())
 }
