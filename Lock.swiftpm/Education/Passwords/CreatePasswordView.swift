@@ -40,7 +40,7 @@ struct CreatePasswordView: View {
     
     private var requirements: Array<Bool> {
         [
-            password.count >= 7, // Minimum Length
+            password.count >= 15, // Minimum Length
             password.contains(where: { $0.isLowercase }), // One Number
             password.contains(where: { $0.isUppercase }), // One Number
             password.contains(where: { $0.isLetter }), // One Number
@@ -189,7 +189,7 @@ struct CreatePasswordView: View {
                     .font(.title2)
                     .bold()
                 VStack(alignment: .leading) {
-                    Text("• 7 or More Characters")
+                    Text("• At least 15 Characters")
                     Text("• At Least 1 Uppercase Letter")
                     Text("• At Least 1 Lowercase Letter")
                     Text("• At Least 1 Number")
