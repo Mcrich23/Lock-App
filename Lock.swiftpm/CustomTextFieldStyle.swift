@@ -11,6 +11,8 @@ struct CustomTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .textFieldStyle(RoundedBorderTextFieldStyle())
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
             .scaleEffect(1.2)
     }
 }

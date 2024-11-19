@@ -22,7 +22,7 @@ struct MFAEductionView: View {
     }
 }
 
-struct MFAEducationIntroView: View {
+private struct MFAEducationIntroView: View {
     @State var showSetupText1 = false
     @State var showSetupText2 = false
     @Binding var isShowingMainView: Bool
@@ -30,33 +30,40 @@ struct MFAEducationIntroView: View {
     
     var body: some View {
         VStack {
-            Image(systemName: "person.badge.shield.exclamationmark")
+            Image(systemName: "lock.open.fill")
                 .resizable()
                 .frame(width: 75, height: 75)
                 .foregroundStyle(Color.red)
-            Text("You were Hacked...")
+            Text("Your Lock account is vulerable...")
                 .opacity(showSetupText1 ? 1 : 0)
             Text("Lets Fix It")
                 .opacity(showSetupText2 ? 1 : 0)
         }
+        .onAppear(perform: {
+            guard isShowingMFA else { return }
+            runAnimation()
+        })
         .onChange(of: isShowingMFA, { oldValue, newValue in
             guard newValue else { return }
-            
-            Task {
-                try? await Task.sleep(for: .seconds(2))
-                withAnimation {
-                    showSetupText1 = true
-                }
-                try? await Task.sleep(for: .seconds(2))
-                withAnimation {
-                    showSetupText2 = true
-                }
-                try? await Task.sleep(for: .seconds(2))
-                withAnimation(.default.speed(0.5)) {
-                    isShowingMainView = true
-                }
-            }
+            runAnimation()
         })
+    }
+    
+    func runAnimation() {
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                showSetupText1 = true
+            }
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                showSetupText2 = true
+            }
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation(.default.speed(0.5)) {
+                isShowingMainView = true
+            }
+        }
     }
 }
 
@@ -221,6 +228,9 @@ private struct MFANavigationLink<Content: View>: View {
     }
 }
 
-#Preview {
+#Preview("Setup2FAView") {
     Setup2FAView()
+}
+#Preview("MFAEducationIntroView") {
+    MFAEducationIntroView(isShowingMainView: .constant(false), isShowingMFA: true)
 }

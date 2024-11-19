@@ -30,6 +30,7 @@ struct PoorPasswordView: View {
                     .frame(maxWidth: 350)
                     .focused($isPasswordFieldFocused)
                     .padding(.horizontal)
+                    .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .overlay(alignment: .trailing) {
                         Button {
