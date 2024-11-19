@@ -228,6 +228,9 @@ private struct MFANavigationLink<Content: View>: View {
     }
 }
 
+#Preview("MFAEductionView") {
+    MFAEductionView(isShowingMFA: true)
+}
 #Preview("Setup2FAView") {
     Setup2FAView()
 }
