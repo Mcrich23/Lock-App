@@ -19,10 +19,13 @@ struct SMSEducationView: View {
     
     var body: some View {
         VStack {
-            Spacer()
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                Spacer()
+            }
             Text("Multi-Factor Authentication: SMS Text Message")
                 .font(.title)
                 .bold()
+                .multilineTextAlignment(.center)
             Text("In the early stages of multi-factor authentication, SMS codes were revolutionary. You receive a text message with a code that you need to enter to complete the login process.")
                 .padding(.top, 1)
             
@@ -47,40 +50,43 @@ struct SMSEducationView: View {
         .overlay(alignment: .top) {
             NotificationAlertView(title: "81961", subtitle: "Your SMS Code is: \(smsCode). Don't share it with anyone.", time: "Now")
                 .shadow(radius: 10, y: 3)
-                .offset(y: setup2FAController.smsIsShowingNotification ? 0 : -180)
+                .offset(y: setup2FAController.smsIsShowingNotification ? 0 : -220)
         }
         .ignoresSafeArea(.keyboard)
         .overlay(alignment: .bottom, content: {
-            if setup2FAController.smsIsShowingNotification {
-                HStack {
-                    @Bindable var setup2FAController = setup2FAController
-                    TextField("Enter Code", text: $setup2FAController.smsCodeText)
-                        .keyboardType(.numberPad)
-                        .textFieldStyle(.custom)
-                        .onSubmit(checkCode)
-                        .focused($isEnteringCode)
-                        .frame(maxWidth: 150)
-                        .padding(.trailing, 15)
-                    Button("Enter", action: checkCode)
-                        .buttonStyle(.borderedProminent)
-                }
-                .matchedGeometryEffect(id: "smsCode", in: namespace)
-            } else {
-                Button("Setup") {
-                    withAnimation {
-                        setup2FAController.smsIsShowingNotification = true
+            Group {
+                if setup2FAController.smsIsShowingNotification {
+                    HStack {
+                        @Bindable var setup2FAController = setup2FAController
+                        TextField("Enter Code", text: $setup2FAController.smsCodeText)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(.custom)
+                            .onSubmit(checkCode)
+                            .focused($isEnteringCode)
+                            .frame(maxWidth: 150)
+                            .padding(.trailing, 15)
+                        Button("Enter", action: checkCode)
+                            .buttonStyle(.borderedProminent)
                     }
+                    .matchedGeometryEffect(id: "smsCode", in: namespace)
+                } else {
+                    Button("Setup") {
+                        withAnimation {
+                            setup2FAController.smsIsShowingNotification = true
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                    .matchedGeometryEffect(id: "smsCode", in: namespace)
                 }
-                .buttonStyle(.bordered)
-                .matchedGeometryEffect(id: "smsCode", in: namespace)
             }
+            .padding(.vertical)
         })
         .alert("Incorrect Code", isPresented: $isShowingIncorrectCodeAlert) {
             Button("Ok") {}
         } message: {
             Text("Please enter the correct code.")
         }
-        .padding()
+        .padding(.horizontal)
     }
     
     var smsCodeGraphic: some View {

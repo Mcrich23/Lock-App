@@ -39,6 +39,7 @@ private struct MFAEducationIntroView: View {
             Text("Lets Fix It")
                 .opacity(showSetupText2 ? 1 : 0)
         }
+        .padding()
         .onAppear(perform: {
             guard isShowingMFA else { return }
             runAnimation()
@@ -91,6 +92,7 @@ private struct Setup2FAView: View {
                 Text("Setup Multi-Factor Authentication")
                     .font(.title)
                     .bold()
+                    .multilineTextAlignment(.center)
                 
                 VStack(alignment: .leading) {
                     Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. It allows you to hold a second part of login that you can use to verify your identity. This makes it harder for someone to gain access to your account if they know your password.")
@@ -101,22 +103,23 @@ private struct Setup2FAView: View {
                 
                 mfaGraphic
                     .opacity(isShowingMFAGraphic ? 1 : 0)
+                
+                MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
+                    SMSEducationView()
+                }
+                .opacity(isShowingMFA1 ? 1 : 0)
+                
+                MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
+                    Text("Setup Authenticator App")
+                }
+                .opacity(isShowingMFA2 ? 1 : 0)
+                
+                MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
+                    Text("Setup Passkeys")
+                }
+                .opacity(isShowingMFA3 ? 1 : 0)
             }
-            
-            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
-                SMSEducationView()
-            }
-            .opacity(isShowingMFA1 ? 1 : 0)
-            
-            MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
-                Text("Setup Authenticator App")
-            }
-            .opacity(isShowingMFA2 ? 1 : 0)
-            
-            MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
-                Text("Setup Passkeys")
-            }
-            .opacity(isShowingMFA3 ? 1 : 0)
+            .padding()
         }
         .task {
             try? await Task.sleep(for: .seconds(2))

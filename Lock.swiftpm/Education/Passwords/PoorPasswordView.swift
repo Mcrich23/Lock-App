@@ -60,6 +60,7 @@ struct PoorPasswordView: View {
                     .disabled(password.isEmpty)
             }
         }
+        .padding()
         .alert("Incorrect Password", isPresented: $isShowingIncorrectPassword) {
             Button("OK") {}
         } message: {

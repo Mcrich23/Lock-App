@@ -141,6 +141,7 @@ struct CreatePasswordView: View {
                 setPasswordView
             }
         }
+        .padding()
         .task {
             try? await Task.sleep(for: .seconds(1))
             withAnimation {
