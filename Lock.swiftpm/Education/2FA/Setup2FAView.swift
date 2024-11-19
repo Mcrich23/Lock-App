@@ -211,6 +211,8 @@ private struct MFANavigationLink<Content: View>: View {
                             .font(.headline)
                         if let description {
                             Text(description)
+                                .multilineTextAlignment(.leading)
+                                .minimumScaleFactor(0.7)
                                 .foregroundStyle(Color.primary)
                         }
                     }
