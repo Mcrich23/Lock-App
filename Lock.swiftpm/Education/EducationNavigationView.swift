@@ -48,29 +48,6 @@ struct EducationNavigationView: View {
     }
 }
 
-struct HorizontalRotation3DViewModifier: ViewModifier {
-    let baseAngle: Angle
-    
-    init(baseAngle: Angle) {
-        self.baseAngle = baseAngle
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .rotation3DEffect(baseAngle, axis: (x: 0, y: 1, z: 0))
-    }
-}
-
-extension AnyTransition {
-    @MainActor
-    static var flip: Self {
-        .modifier(
-            active: HorizontalRotation3DViewModifier(baseAngle: .degrees(180)),
-            identity: HorizontalRotation3DViewModifier(baseAngle: .degrees(0))
-        )
-    }
-}
-
 struct CreatePasswordSetupMFA: View {
     @State var isShowingMFA: Bool = false
     @Environment(\.colorScheme) var colorScheme

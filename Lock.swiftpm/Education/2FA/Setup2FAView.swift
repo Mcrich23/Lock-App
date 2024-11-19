@@ -60,12 +60,23 @@ struct MFAEducationIntroView: View {
     }
 }
 
+@Observable
+class Setup2FAController {
+    var completedSms: Bool = false
+    var smsIsShowingNotification = false
+    var smsCodeText = ""
+    
+    var completedTotp: Bool = false
+    var completedPasskeys: Bool = false
+}
+
 private struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     @State var isShowingMFAGraphic: Bool = false
     @State var isShowingMFA1: Bool = false
     @State var isShowingMFA2: Bool = false
     @State var isShowingMFA3: Bool = false
+    @State var controller = Setup2FAController()
     
     var body: some View {
         NavigationStack {
@@ -85,17 +96,17 @@ private struct Setup2FAView: View {
                     .opacity(isShowingMFAGraphic ? 1 : 0)
             }
             
-            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code") {
+            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
                 SMSEducationView()
             }
             .opacity(isShowingMFA1 ? 1 : 0)
             
-            MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Have a rotating set of codes displayed on your phone inside an authenticator app") {
+            MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
                 Text("Setup Authenticator App")
             }
             .opacity(isShowingMFA2 ? 1 : 0)
             
-            MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID") {
+            MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
                 Text("Setup Passkeys")
             }
             .opacity(isShowingMFA3 ? 1 : 0)
@@ -118,6 +129,7 @@ private struct Setup2FAView: View {
                 isShowingMFA3 = true
             }
         }
+        .environment(controller)
     }
     
     private var mfaGraphic: some View {
@@ -168,6 +180,7 @@ private struct MFANavigationLink<Content: View>: View {
     let image: Image
     let title: String
     let description: String?
+    let isCompleted: Bool
     @ViewBuilder var destination: Content
     @Namespace var namespace
     
@@ -190,6 +203,15 @@ private struct MFANavigationLink<Content: View>: View {
                             Text(description)
                                 .foregroundStyle(Color.primary)
                         }
+                    }
+                    
+                    if isCompleted {
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxHeight: 25)
+                            .foregroundColor(.green)
                     }
                 }
             }

@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct SMSEducationView: View {
+    @Environment(Setup2FAController.self) var setup2FAController
     let timer = UpsideDownAccuteTriangle.defaultTimer
+    let smsCode = "110843"
+    @Namespace var namespace
+    @Environment(\.dismiss) var dismiss
+    @State var isShowingIncorrectCodeAlert = false
     
     var body: some View {
+        @Bindable var setup2FAController = setup2FAController
+        
         VStack {
+            Spacer()
             Text("Multi-Factor Authentication: SMS Text Message")
                 .font(.title)
                 .bold()
@@ -30,8 +38,44 @@ struct SMSEducationView: View {
                 .frame(maxWidth: 755, alignment: .leading)
             smsCodeHackerGraphic
                 .padding(.top, 15)
+                .padding(.bottom, 60)
+                .padding(.bottom)
+            
+            if setup2FAController.smsIsShowingNotification {
+                HStack {
+                    TextField("Enter Code", text: $setup2FAController.smsCodeText)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.custom)
+                        .onSubmit(checkCode)
+                        .frame(maxWidth: 150)
+                        .padding(.trailing, 15)
+                    Button("Enter", action: checkCode)
+                        .buttonStyle(.borderedProminent)
+                }
+                .matchedGeometryEffect(id: "smsCode", in: namespace)
+            } else {
+                Button("Setup") {
+                    withAnimation {
+                        setup2FAController.smsIsShowingNotification = true
+                    }
+                }
+                .buttonStyle(.bordered)
+                .matchedGeometryEffect(id: "smsCode", in: namespace)
+            }
+            
+            Spacer()
         }
         .frame(maxWidth: 800)
+        .overlay(alignment: .top) {
+            NotificationAlertView(title: "81961", subtitle: "Your SMS Code is: \(smsCode). Don't share it with anyone.", time: "Now")
+                .shadow(radius: 10, y: 3)
+                .offset(y: setup2FAController.smsIsShowingNotification ? -20 : -160)
+        }
+        .alert("Incorrect Code", isPresented: $isShowingIncorrectCodeAlert) {
+            Button("Ok") {}
+        } message: {
+            Text("Please enter the correct code.")
+        }
     }
     
     var smsCodeGraphic: some View {
@@ -95,18 +139,7 @@ struct SMSEducationView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 50, height: 50)
                     .symbolRenderingMode(.multicolor)
-//                    .background(
-//                        Color(uiColor: .systemBackground)
-//                        .frame(width: 50, height: 50)
-//                        .offset(x: 3, y: -3)
-//                    )
                     .offset(x: -15, y: 15)
-//                    .rotationEffect(.degrees(-65))
-//                Rectangle()
-//                    .frame(width: 6, height: 50)
-//                    .rotationEffect(.degrees(-30))
-//                    .offset(x: -33, y: 15)
-//                    .foregroundStyle(.red)
             }
             .overlay(alignment: .bottom) {
                 Image(systemName: "person.badge.shield.exclamationmark")
@@ -122,6 +155,16 @@ struct SMSEducationView: View {
                     )
                     .offset(x: 13, y: 68)
             }
+    }
+    
+    func checkCode() {
+        guard setup2FAController.smsCodeText == smsCode else {
+            isShowingIncorrectCodeAlert.toggle()
+            return
+        }
+        
+        setup2FAController.completedSms = true
+        dismiss()
     }
 }
 
