@@ -68,16 +68,6 @@ private struct MFAEducationIntroView: View {
     }
 }
 
-@Observable
-class Setup2FAController {
-    var completedSms: Bool = false
-    var smsIsShowingNotification = false
-    var smsCodeText = ""
-    
-    var completedTotp: Bool = false
-    var completedPasskeys: Bool = false
-}
-
 private struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     @State var isShowingMFAGraphic: Bool = false
@@ -110,7 +100,7 @@ private struct Setup2FAView: View {
                 .opacity(isShowingMFA1 ? 1 : 0)
                 
                 MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
-                    Text("Setup Authenticator App")
+                    TOTPEducationView()
                 }
                 .opacity(isShowingMFA2 ? 1 : 0)
                 
