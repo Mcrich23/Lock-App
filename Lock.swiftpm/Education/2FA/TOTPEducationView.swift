@@ -18,7 +18,7 @@ struct TOTPEducationView: View {
                 .font(.title)
                 .bold()
                 .multilineTextAlignment(.center)
-            Text("Since the invention of SMS MFA, Time-Based One Time Passcodes (TOTP) have become the most popular method of authentication. It provides a unique code based on a key factored in with time. This key is often imported with a QR code.")
+            Text("Since the invention of SMS MFA, Time-Based One Time Passcodes (TOTP) have become the most popular method of authentication. It provides a unique code based on a private key and time, often every 30 seconds. This private key is often imported with a QR code.")
             
             if let qrCode {
                 Image(uiImage: qrCode)
