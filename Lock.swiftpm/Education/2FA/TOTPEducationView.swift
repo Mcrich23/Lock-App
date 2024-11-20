@@ -78,6 +78,7 @@ struct TOTPEducationView: View {
             }
         }
         .frame(maxWidth: 800)
+        .padding()
         .onReceive(timer) { _ in
             setup2FAController.updateTotp()
         }
