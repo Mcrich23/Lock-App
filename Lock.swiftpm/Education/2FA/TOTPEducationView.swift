@@ -38,17 +38,15 @@ struct TOTPEducationView: View {
                     .rotation3DEffect(.degrees(setup2FAController.isShowingOtp ? 90 : 0), axis: (x: 1, y: 0, z: 0))
                     .offset(y: setup2FAController.isShowingOtp ? -25 : 0)
                     .allowsHitTesting(!setup2FAController.isShowingOtp)
-                HStack {
+                HStack(spacing: 20) {
                     Text(setup2FAController.otpText)
                     
                     if let time = setup2FAController.timeUntilNewOtp {
-                        Text("\(Int(time))")
-                            .padding(.vertical, 2)
-                            .padding(.vertical, 4)
-                            .foregroundStyle(Color.white)
-                            .padding(.horizontal)
-                            .background(Color.accentColor)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                        CircleCountdownView(progress: 1-((time-1)/30))
+                            .frame(width: 40, height: 40)
+                            .overlay {
+                                Text("\(30-Int(time))")
+                            }
                     }
                 }
                 .offset(y: setup2FAController.isShowingOtp ? 0 : 100)

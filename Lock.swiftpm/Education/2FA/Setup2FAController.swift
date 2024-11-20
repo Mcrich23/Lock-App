@@ -23,11 +23,8 @@ class Setup2FAController {
     var isShowingOtp = false
     var enteredOtpText = ""
     private(set) var otpText = ""
-    private var lastOtpTextUpdate: Date?
     
-    var timeUntilNewOtp: TimeInterval? {
-        lastOtpTextUpdate?.distance(to: .now)
-    }
+    private(set) var timeUntilNewOtp: TimeInterval?
     
     private var totpSecretText = UUID().uuidString
     func updateTotp() {
@@ -53,11 +50,12 @@ class Setup2FAController {
 
         let otpText = String(format: "%0*u", digits, truncatedHash)
         
+        let timeElapsed = Date().timeIntervalSince1970.truncatingRemainder(dividingBy: period)
+        self.timeUntilNewOtp = (period - timeElapsed)+1
+        
         guard otpText != self.otpText else {
-            self.lastOtpTextUpdate = self.lastOtpTextUpdate
             return
         }
-        self.lastOtpTextUpdate = .now
         self.otpText = otpText
     }
     
@@ -85,4 +83,10 @@ class Setup2FAController {
     
     // MARK: Passkeys
     var completedPasskeys: Bool = false
+}
+
+import SwiftUI
+#Preview {
+    TOTPEducationView()
+        .environment(Setup2FAController())
 }
