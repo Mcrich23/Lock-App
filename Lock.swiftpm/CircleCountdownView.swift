@@ -14,7 +14,7 @@ struct CircleCountdownView: View {
         Circle()
             .trim(from: 0, to: progress)
             .fill(Color.clear)
-            .stroke(Color.accentColor, style: .init(lineWidth: 6))
+            .stroke(Color.accentColor, style: .init(lineWidth: 4))
             .rotationEffect(.degrees(-90))
             .animation(.easeInOut, value: progress == 1 ? progress : nil)
     }
