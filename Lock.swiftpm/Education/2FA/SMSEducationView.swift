@@ -166,23 +166,23 @@ struct SMSEducationView: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
+                    .frame(width: 50, height: 50)
                     .symbolRenderingMode(.multicolor)
-                    .offset(x: -15, y: 10)
+                    .offset(x: -15, y: 15)
             }
             .overlay(alignment: .bottom) {
                 Image(systemName: "person.badge.shield.exclamationmark")
                     .resizable()
-//                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 60, height: 67)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 77, height: 77)
                     .foregroundStyle(Color.red)
                     .background(
                         Color(uiColor: .systemBackground)
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
-                            .offset(x: -8, y: 20)
+                            .offset(x: -8, y: -10)
                     )
-                    .offset(x: 10, y: 35)
+                    .offset(x: 13, y: 68)
             }
     }
     
