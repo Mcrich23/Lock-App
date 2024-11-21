@@ -204,12 +204,12 @@ private struct Setup2FAView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 25))
                         .offset(x: -5, y: 15)
                 )
-//                .background(
-//                    Color(uiColor: .systemBackground)
-//                        .clipShape(Circle())
-//                        .frame(width: 25, height: 30)
-//                        .offset(x: 11, y: -10)
-//                )
+                .background(
+                    Color(uiColor: .systemBackground)
+                        .clipShape(Circle())
+                        .frame(width: 25, height: 30)
+                        .offset(x: 11, y: -10)
+                )
                 .offset(x: 5, y: 30)
         }
         .scaleEffect(0.7)
