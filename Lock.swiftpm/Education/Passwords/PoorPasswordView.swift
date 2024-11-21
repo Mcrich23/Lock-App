@@ -47,7 +47,7 @@ struct PoorPasswordView: View {
                                 Text("Hint")
                                     .font(.title2)
                                     .bold()
-                                Text("Password is ***\(correctPassword)***")
+                                Text("The Password is ***\(correctPassword)***")
                             }
                                 .padding(.horizontal)
                         }
