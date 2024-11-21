@@ -65,7 +65,7 @@ struct SMSEducationView: View {
                             .focused($isEnteringCode)
                             .frame(maxWidth: 150)
                             .padding(.trailing, 5)
-                        Button("Enter", action: checkCode)
+                        Button("Setup", action: checkCode)
                             .buttonStyle(.borderedProminent)
                             .buttonBorderShape(.roundedRectangle(radius: 6))
                             .background(

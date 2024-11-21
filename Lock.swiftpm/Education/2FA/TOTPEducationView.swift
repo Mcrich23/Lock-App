@@ -107,11 +107,11 @@ struct TOTPEducationView: View {
                         }
                         
                         HStack {
-                            TextField("Confirm OTP to Setup", text: $setup2FAController.enteredOtpText)
+                            TextField("Confirm Code", text: $setup2FAController.enteredOtpText)
                                 .textFieldStyle(.roundedBorder)
                                 .onSubmit(setupOtp)
                             
-                            Button("Enter", action: setupOtp)
+                            Button("Setup", action: setupOtp)
                                 .buttonStyle(.borderedProminent)
                             
                             if setup2FAController.completedTotp {
