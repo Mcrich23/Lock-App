@@ -224,9 +224,11 @@ struct TOTPEducationView: View {
     }
     
     func reset() {
-        setup2FAController.completedTotp = false
-        setup2FAController.isShowingOtp = false
-        setup2FAController.enteredOtpText = ""
+        withAnimation {
+            setup2FAController.completedTotp = false
+            setup2FAController.isShowingOtp = false
+            setup2FAController.enteredOtpText = ""
+        }
     }
 }
 
