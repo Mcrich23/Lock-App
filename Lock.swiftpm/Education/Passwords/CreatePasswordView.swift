@@ -50,11 +50,17 @@ struct CreatePasswordView: View {
     }
     
     private var requirementsBarValue: Double {
-        requirements.reduce(0) { $0 + ($1 ? 1 : 0) }
+        let value = requirements.reduce(0) { $0 + ($1 ? 1 : 0) }
+        
+        guard value != requirements.count else {
+            return Double(value)
+        }
+        
+        return Double(value-1)
     }
     
     private var passwordStrength: PasswordStrength? {
-        PasswordStrength(from: requirementsBarValue)
+        PasswordStrength(from: requirements.reduce(0) { $0 + ($1 ? 1 : 0) })
     }
     
     private var requirementsBarText: String {
@@ -182,7 +188,7 @@ struct CreatePasswordView: View {
                 
                 Button("Enter", action: setPassword)
                     .buttonStyle(.borderedProminent)
-                    .disabled(password.isEmpty)
+                    .disabled(passwordStrength != .strong)
             }
             
             VStack(alignment: .leading) {
@@ -203,6 +209,8 @@ struct CreatePasswordView: View {
     }
     
     func setPassword() {
+        guard passwordStrength == .strong else { return }
+        
         Task {
             isPasswordFieldFocused = false
             

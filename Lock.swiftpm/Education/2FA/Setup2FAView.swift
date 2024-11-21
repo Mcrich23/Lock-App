@@ -71,6 +71,8 @@ private struct MFAEducationIntroView: View {
 private struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
     @State var isShowingMFAGraphic: Bool = false
+    @State var isShowingMFATextUnderGraphic: Bool = false
+    @State var isShowingMFAText: Bool = false
     @State var isShowingMFA1: Bool = false
     @State var isShowingMFA2: Bool = false
     @State var isShowingMFA3: Bool = false
@@ -85,14 +87,38 @@ private struct Setup2FAView: View {
                     .multilineTextAlignment(.center)
                 
                 VStack(alignment: .leading) {
-                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. This way, if one layer becomes comprimised, your account is still safe. MFA is typically used through SMS Text Message, Authenticator Apps, or Passkeys.")
+                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. You create an additional step to prove your identity when logging in. This can be through SMS, Authenticator Apps, Passkeys, and More.")
                 }
                 .padding(.top, 1)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: 600, alignment: .leading)
                 
-                mfaGraphic
+                HStack {
+                    mfaGraphic
+                    Divider()
+                        .padding()
+                    mfaHackerGraphic
+                }
                     .opacity(isShowingMFAGraphic ? 1 : 0)
+                
+                VStack(alignment: .leading) {
+                    Text("MFA is highly recommended, because if one layer becomes comprimised, your account is still safe from attackers.")
+                }
+                .padding(.top, 1)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: 600, alignment: .leading)
+                .opacity(isShowingMFATextUnderGraphic ? 1 : 0)
+                .padding(.bottom)
+                
+                VStack(alignment: .leading) {
+                    Text("Setup MFA")
+                        .font(.title2)
+                        .bold()
+                }
+                .padding(.top, 1)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: 700, alignment: .leading)
+                .opacity(isShowingMFAText ? 1 : 0)
                 
                 MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
                     SMSEducationView()
@@ -117,6 +143,14 @@ private struct Setup2FAView: View {
                 isShowingMFAGraphic = true
             }
             try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                isShowingMFATextUnderGraphic = true
+            }
+            try? await Task.sleep(for: .seconds(2))
+            withAnimation {
+                isShowingMFAText = true
+            }
+            try? await Task.sleep(for: .milliseconds(750))
             withAnimation {
                 isShowingMFA1 = true
             }
@@ -159,11 +193,60 @@ private struct Setup2FAView: View {
                 .offset(x: 20, y: -12)
         }
         .overlay(alignment: .bottom) {
-            Image(systemName: "lock.fill")
+            Image(systemName: "lock.open.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 50, height: 50)
                 .foregroundStyle(Color.green)
+                .background(
+                    Color(uiColor: .systemBackground)
+                        .frame(width: 25, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: 25))
+                        .offset(x: -5, y: 15)
+                )
+//                .background(
+//                    Color(uiColor: .systemBackground)
+//                        .clipShape(Circle())
+//                        .frame(width: 25, height: 30)
+//                        .offset(x: 11, y: -10)
+//                )
+                .offset(x: 5, y: 30)
+        }
+        .scaleEffect(0.7)
+    }
+    
+    private var mfaHackerGraphic: some View {
+        ZStack {
+            UpsideDownAccuteTriangle(timer: timer, visibleSides: [.right])
+                .environment(\.direction, .right)
+            UpsideDownAccuteTriangle(timer: timer, visibleSides: [.left])
+                .environment(\.direction, .left)
+        }
+        .frame(width: 200, height: 200)
+        .overlay(alignment: .topLeading) {
+            Image(systemName: "key.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.accentColor)
+                .background(Color(uiColor: .systemBackground))
+                .offset(x: -12, y: -12)
+        }
+        .overlay(alignment: .topTrailing) {
+            Image(systemName: "key.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.red)
+                .background(Color(uiColor: .systemBackground))
+                .offset(x: 20, y: -12)
+        }
+        .overlay(alignment: .bottom) {
+            Image(systemName: "lock.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 50, height: 50)
+                .foregroundStyle(Color.primary)
                 .background(
                     Color(uiColor: .systemBackground)
                         .frame(width: 25, height: 25)
