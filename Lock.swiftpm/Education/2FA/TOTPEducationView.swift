@@ -38,7 +38,7 @@ struct TOTPEducationView: View {
                 .font(.title)
                 .bold()
                 .multilineTextAlignment(.center)
-            Text("Since the invention of SMS MFA, Time-Based One Time Passcodes (TOTP) have become the most popular method of authentication. It provides a unique code based on a private key and time, often every 30 seconds. This private key is often imported with a QR code.")
+            Text("Since the invention of SMS Multi-Factor Authentication, Time-Based One Time Passcodes (TOTP) have become a very popular method of authentication. It provides a unique code based on a private key and time, often every 30 seconds. This is not only secure, but also very easy to use and straight forward. This is typically setup with a QR code.")
             
             GeometryReader { geo in
                 VStack {

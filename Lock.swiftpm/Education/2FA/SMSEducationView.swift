@@ -26,7 +26,7 @@ struct SMSEducationView: View {
                 .font(.title)
                 .bold()
                 .multilineTextAlignment(.center)
-            Text("In the early stages of multi-factor authentication, SMS codes were revolutionary. You receive a text message with a code that you need to enter to complete the login process.")
+            Text("In the early stages of MFA, SMS codes were revolutionary. When you login, you are sent a text message with a code that you then enter to complete the login process. In 2024, this is the most commonly used form of Multi-Factor Authentication.")
                 .padding(.top, 1)
             
             smsCodeGraphic

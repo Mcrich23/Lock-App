@@ -34,7 +34,7 @@ private struct MFAEducationIntroView: View {
                 .resizable()
                 .frame(width: 75, height: 75)
                 .foregroundStyle(Color.red)
-            Text("Your Lock account is vulerable...")
+            Text("Your Lock account is vulnerable...")
                 .opacity(showSetupText1 ? 1 : 0)
             Text("Lets Fix It")
                 .opacity(showSetupText2 ? 1 : 0)
@@ -85,7 +85,7 @@ private struct Setup2FAView: View {
                     .multilineTextAlignment(.center)
                 
                 VStack(alignment: .leading) {
-                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. It allows you to hold a second part of login that you can use to verify your identity. This makes it harder for someone to gain access to your account if they know your password.")
+                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. This way, if one layer becomes comprimised, your account is still safe. MFA is typically used through SMS Text Message, Authenticator Apps, or Passkeys.")
                 }
                 .padding(.top, 1)
                 .multilineTextAlignment(.leading)
