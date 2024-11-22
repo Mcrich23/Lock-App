@@ -72,7 +72,7 @@ struct PasskeysEducationView: View {
         }
         .sheet(isPresented: $setup2FAController.isShowingPasskey) {
             passkeySetupSheet
-                .presentationDetents(UIDevice.current.userInterfaceIdiom == .phone ? [.medium] : [])
+                .presentationDetents(UIDevice.current.userInterfaceIdiom == .phone ? [.fraction(0.4)] : [])
                 .presentationCornerRadius(10)
                 .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? nil : 500)
                 .presentationSizing(.fitted)
@@ -101,7 +101,8 @@ struct PasskeysEducationView: View {
                 
                 GroupBox {
                     Text("1000110000100010010110\n10010011111010100101101\n100011000010001001010")
-                        .fixedSize()
+                        .fixedSize(horizontal: false, vertical: true)
+                        .lineLimit(3)
                 }
                 .frame(height: 100)
                 .overlay(alignment: .trailing) {
