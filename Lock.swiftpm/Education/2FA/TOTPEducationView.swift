@@ -54,13 +54,6 @@ struct TOTPEducationView: View {
                 }
                 .overlay {
                     VStack(spacing: 0) {
-//                        qrCodeSquareStack
-//                            .opacity((qrCodeAnimationGridValue > 0.75 && qrCodeAnimationGridValue <= 1.1) ? 1 : 0)
-//                        qrCodeSquareStack
-//                            .opacity((qrCodeAnimationGridValue > 0.5 && qrCodeAnimationGridValue <= 1.1) ? 1 : (qrCodeAnimationGridValue > 0.75 && qrCodeAnimationGridValue <= 1) ? 0.5 : 0)
-//                            .opacity((qrCodeAnimationGridValue > 0.25 && qrCodeAnimationGridValue <= 1.1) ? 1 : (qrCodeAnimationGridValue > 0.5 && qrCodeAnimationGridValue <= 0.75) ? 0.5 : 0)
-//                        qrCodeSquareStack
-//                            .opacity((qrCodeAnimationGridValue > 0 && qrCodeAnimationGridValue <= 1.1) ? 1 : (qrCodeAnimationGridValue > 0.25 && qrCodeAnimationGridValue <= 0.5) ? 0.5 : 0)
                         ForEach(Array(1...4), id: \.self) { i in
                             HStack(spacing: 0) {
                                 ForEach(0..<4) { i in
