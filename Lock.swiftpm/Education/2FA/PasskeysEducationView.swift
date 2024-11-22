@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PasskeysEducationView: View {
+    @Environment(Setup2FAController.self) var setup2FAController
+    @Environment(\.dismiss) var dismiss
     let timer = UpsideDownAccuteTriangle.defaultTimer
     
     var publicKeyColor: Color {
@@ -29,6 +31,8 @@ struct PasskeysEducationView: View {
     }
     
     var body: some View {
+        @Bindable var setup2FAController = setup2FAController
+        
         ScrollView {
             VStack {
                 Text("Multi-Factor Authentication: Passkeys")
@@ -46,10 +50,32 @@ struct PasskeysEducationView: View {
                     .padding(.vertical, 25)
                 
                 Text("Once the service has validated it is correct, you are then logged in. Because of this process, your ") + privateKeyText + Text(" key is never revealed, which makes Passkey phishing and other social engineering attacks impossible.")
+                
+                if setup2FAController.completedPasskeys {
+                    GroupBox {
+                        HStack {
+                            Text("Passkey Setup Complete")
+                            
+                            Button("Reset", action: reset)
+                                .buttonStyle(.borderedProminent)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    Button("Setup Passkey", action: setup)
+                        .buttonStyle(.borderedProminent)
+                }
             }
             .frame(maxWidth: 800)
             .padding()
             .frame(maxWidth: .infinity)
+        }
+        .sheet(isPresented: $setup2FAController.isShowingPasskey) {
+            passkeySetupSheet
+                .presentationDetents(UIDevice.current.userInterfaceIdiom == .phone ? [.medium] : [])
+                .presentationCornerRadius(10)
+                .frame(maxWidth: UIDevice.current.userInterfaceIdiom == .phone ? nil : 500)
+                .presentationSizing(.fitted)
         }
     }
     
@@ -179,8 +205,100 @@ struct PasskeysEducationView: View {
         }
         .scaleEffect(0.7)
     }
+    
+    private var passkeySetupSheet: some View {
+        VStack {
+            HStack {
+                Image(systemName: "person.badge.key.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                
+                Text("Sign In")
+                    .bold()
+                
+                Spacer()
+                
+                Button {
+                    setup2FAController.isShowingPasskey = false
+                } label: {
+                    Label {
+                        Text("Cancel")
+                    } icon: {
+                        Image(systemName: "xmark.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 25)
+                    }
+                        .labelStyle(.iconOnly)
+                        .symbolRenderingMode(.palette)
+                }
+                .buttonBorderShape(.circle)
+                .clipShape(Circle())
+                .foregroundStyle(Color(uiColor: .secondaryLabel), .thinMaterial)
+            }
+            .frame(height: 25)
+            
+            Spacer()
+                .frame(maxHeight: 80)
+            
+            VStack(spacing: 10) {
+                Image(systemName: "faceid")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50, height: 50)
+                    .foregroundStyle(Color.blue.secondary)
+                
+                Text("Use Face ID to sign in?")
+                    .font(.title3)
+                    .bold()
+                Text("A passkey for \"user\" will be saved in iCloud Keychain and available on all your devices.")
+                    .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.center)
+                
+                Button(action: markComplete) {
+                    Text("Continue")
+                        .foregroundStyle(Color.white)
+                        .bold()
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color.blue)
+                        )
+                }
+            }
+            
+            Spacer()
+                .frame(maxHeight: 80)
+            
+            Text("Simulated, not for real use")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .padding()
+    }
+    
+    private func setup() {
+        setup2FAController.isShowingPasskey = true
+    }
+    
+    private func markComplete() {
+        withAnimation {
+            setup2FAController.isShowingPasskey = false
+            setup2FAController.completedPasskeys = true
+        }
+        dismiss()
+    }
+    
+    private func reset() {
+        withAnimation {
+            setup2FAController.completedPasskeys = false
+        }
+    }
 }
 
 #Preview {
     PasskeysEducationView()
+        .environment(Setup2FAController())
 }

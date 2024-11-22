@@ -131,7 +131,7 @@ private struct Setup2FAView: View {
                 .opacity(isShowingMFA2 ? 1 : 0)
                 
                 MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
-                    Text("Setup Passkeys")
+                    PasskeysEducationView()
                 }
                 .opacity(isShowingMFA3 ? 1 : 0)
             }

@@ -23,7 +23,6 @@ class Setup2FAController {
     var isShowingOtp = false
     var enteredOtpText = ""
     private(set) var otpText = ""
-    
     private(set) var timeUntilNewOtp: TimeInterval?
     
     private var totpSecretText = UUID().uuidString
@@ -83,6 +82,7 @@ class Setup2FAController {
     
     // MARK: Passkeys
     var completedPasskeys: Bool = false
+    var isShowingPasskey: Bool = false
 }
 
 import SwiftUI
