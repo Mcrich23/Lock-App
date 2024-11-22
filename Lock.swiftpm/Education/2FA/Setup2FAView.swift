@@ -34,7 +34,7 @@ private struct MFAEducationIntroView: View {
                 .resizable()
                 .frame(width: 75, height: 75)
                 .foregroundStyle(Color.red)
-            Text("Your Lock account is vulnerable...")
+            Text("Your Lock account is **Still** vulnerable...")
                 .opacity(showSetupText1 ? 1 : 0)
             Text("Lets Fix It")
                 .opacity(showSetupText2 ? 1 : 0)
