@@ -10,7 +10,7 @@ import SwiftUI
 @Observable
 class EductionNavigationController {
     enum ShownView: Int {
-        case poorPassword, createPasswordSetupMFA
+        case stateOfSecurity, poorPassword, createPasswordSetupMFA
         
         mutating func next() {
             if let newValue = ShownView(rawValue: self.rawValue + 1) {
@@ -25,7 +25,7 @@ class EductionNavigationController {
         }
     }
     
-    var shownView: ShownView = .poorPassword
+    var shownView: ShownView = .stateOfSecurity
 }
 
 struct EducationNavigationView: View {
@@ -35,10 +35,14 @@ struct EducationNavigationView: View {
     var body: some View {
         VStack {
             switch educationNavigationController.shownView {
+            case .stateOfSecurity:
+                SecurityIntroView()
+                    .fillSpaceAvailable()
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             case .poorPassword:
                 PoorPasswordView()
                     .fillSpaceAvailable()
-//                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+                    .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .identity))
             case .createPasswordSetupMFA:
                 CreatePasswordSetupMFA()
                     .transition(.asymmetric(insertion: .scale, removal: .move(edge: .leading)))

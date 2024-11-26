@@ -9,3 +9,6 @@
 - https://cybersecurityventures.com/cybercrime-to-cost-the-world-9-trillion-annually-in-2024/
 - https://cybersecurityventures.com/cybersecurity-almanac-2024/
 - https://www.ic3.gov/AnnualReport/Reports/2023_IC3Report.pdf
+- https://us.norton.com/blog/emerging-threats/cybersecurity-statistics#:~:text=How%20many%20people%20get%20hacked,people%20being%20hacked%20per%20year.
+- https://www.getastra.com/blog/security-audit/cyber-security-statistics/#Headliners_for_Cybersecurity_in_2023
+- https://jumpcloud.com/blog/phishing-attack-statistics
