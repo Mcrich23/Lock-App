@@ -105,6 +105,7 @@ struct SecurityIntroView: View {
                 isShowingGetStarted = true
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .overlay {
             GeometryReader { geo in
                 VStack(spacing: 30) {
@@ -142,6 +143,8 @@ struct SecurityIntroView: View {
                 .offset(x: 0, y: isShowingNotGoodPopup ? 0 : -geo.size.height)
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
             }
+            .ignoresSafeArea()
+            .background(.ultraThinMaterial.opacity(isShowingNotGoodPopup ? 1 : 0))
             .allowsHitTesting(isShowingNotGoodPopup)
 //            .background {
 //                Color.red

@@ -37,7 +37,6 @@ struct EducationNavigationView: View {
             switch educationNavigationController.shownView {
             case .stateOfSecurity:
                 SecurityIntroView()
-                    .fillSpaceAvailable()
                     .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
             case .poorPassword:
                 PoorPasswordView()
