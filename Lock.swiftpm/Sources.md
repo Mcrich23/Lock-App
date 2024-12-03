@@ -1,5 +1,6 @@
 #  Sources
 
+## Information
 - https://www.hypr.com/security-encyclopedia/sms-2fa
 - https://www.cisa.gov/stopransomware/multi-factor-authentication-mfa
 - https://www.onelogin.com/learn/what-is-mfa
@@ -13,5 +14,7 @@
 - https://www.getastra.com/blog/security-audit/cyber-security-statistics/#Headliners_for_Cybersecurity_in_2023
 - https://jumpcloud.com/blog/phishing-attack-statistics
 - https://nordvpn.com/blog/what-is-ciphertext/
+
+## Code
 - https://stackoverflow.com/questions/9049789/aes-encryption-key-versus-iv
 - https://developer.apple.com/documentation/cryptokit/storing_cryptokit_keys_in_the_keychain
