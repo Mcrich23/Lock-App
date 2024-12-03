@@ -85,9 +85,11 @@ struct PasswordItemDetailView: View {
     func editableRowItem(withName name: String, binding: Binding<String?>, isShowing: Bool? = nil) -> some View {
         if let text = binding.wrappedValue, !text.isEmpty, (isShowing ?? true), !isEditing {
             Divider()
+                .matchedGeometryEffect(id: "\(name)_divider", in: namespace)
             
             HStack {
                 Text(name)
+                    .matchedGeometryEffect(id: "\(name)_name", in: namespace)
                 
                 Spacer()
                 
@@ -96,9 +98,11 @@ struct PasswordItemDetailView: View {
             }
         } else if isEditing {
             Divider()
+                .matchedGeometryEffect(id: "\(name)_divider", in: namespace)
             
             HStack {
                 Text(name)
+                    .matchedGeometryEffect(id: "\(name)_name", in: namespace)
                 
                 Spacer()
                 
@@ -112,62 +116,78 @@ struct PasswordItemDetailView: View {
     
     @ViewBuilder
     var passwordRow: some View {
-        if let text = textPassword, !text.isEmpty, !isEditing {
-            Divider()
-            
-            HStack {
-                Text("Password")
+        VStack {
+            if let text = textPassword, !text.isEmpty, !isEditing {
+                Divider()
+                    .matchedGeometryEffect(id: "password_divider", in: namespace)
                 
-                Spacer()
+                HStack {
+                    Text("Password")
+                        .matchedGeometryEffect(id: "password_name", in: namespace)
+                    
+                    Spacer()
+                    
+                    Text(text)
+                        .textSelection(.enabled)
+                        .matchedGeometryEffect(id: "password_text", in: namespace)
+                        .onTapGesture {
+                            isShowingPassword.toggle()
+                        }
+                        .background(content: {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(!isShowingPassword ? .clear : Color(uiColor: .tertiarySystemBackground))
+                                .opacity(!isShowingPassword ? 0 : 1)
+                                .onTapGesture {
+                                    isShowingPassword.toggle()
+                                }
+                                .scaleEffect(x: 1.2)
+                        })
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(isShowingPassword ? .primary : Color(uiColor: .secondarySystemBackground), lineWidth: 2)
+                                .shadow(color: .primary, radius: 2)
+                                .overlay(content: {
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(isShowingPassword ? .clear : Color(uiColor: .secondarySystemBackground))
+                                        .onTapGesture {
+                                            isShowingPassword.toggle()
+                                        }
+                                })
+                                .opacity(isShowingPassword ? 0 : 1)
+                                .scaleEffect(x: 1.2)
+                        }
+                        .animation(.default, value: isShowingPassword)
+                }
+            } else if isEditing {
+                Divider()
+                    .matchedGeometryEffect(id: "password_divider", in: namespace)
                 
-//                Text(isShowingPassword ? text : "**************")
-                Text(text)
-                    .textSelection(.enabled)
-                    .matchedGeometryEffect(id: "password_text", in: namespace)
-                    .onTapGesture {
-                        isShowingPassword.toggle()
-                    }
-                    .background(content: {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(!isShowingPassword ? .clear : Color(uiColor: .tertiarySystemBackground))
-                            .opacity(!isShowingPassword ? 0 : 1)
-                            .onTapGesture {
-                                isShowingPassword.toggle()
-                            }
-                            .scaleEffect(x: 1.2)
-                    })
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(isShowingPassword ? .primary : Color(uiColor: .secondarySystemBackground), lineWidth: 2)
-                            .shadow(color: .primary, radius: 2)
-                            .overlay(content: {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(isShowingPassword ? .clear : Color(uiColor: .secondarySystemBackground))
-                                    .onTapGesture {
-                                        isShowingPassword.toggle()
-                                    }
-                            })
-                            .opacity(isShowingPassword ? 0 : 1)
-                            .scaleEffect(x: 1.2)
-                    }
-                    .animation(.default, value: isShowingPassword)
+                HStack {
+                    Text("Password")
+                        .matchedGeometryEffect(id: "password_name", in: namespace)
+                    
+                    Spacer()
+                    
+                    TextField("Password", text: optionalToRequiredStringBinding($textPassword))
+                        .multilineTextAlignment(.trailing)
+                        .textFieldStyle(.emptyable(with: $item.userName))
+                        .matchedGeometryEffect(id: "password_text", in: namespace)
+                        .onChange(of: textPassword) {
+                            item.setPassword(textPassword, using: aes)
+                        }
+                }
             }
-        } else if isEditing {
-            Divider()
             
-            HStack {
-                Text("Password")
-                
-                Spacer()
-                
-                TextField("Password", text: optionalToRequiredStringBinding($textPassword))
-                    .multilineTextAlignment(.trailing)
-                    .textFieldStyle(.emptyable(with: $item.userName))
-                    .matchedGeometryEffect(id: "password_text", in: namespace)
-                    .onChange(of: textPassword) {
-                        item.setPassword(textPassword, using: aes)
-                    }
-            }
+            PasswordsRequirementsView(
+                password: optionalToRequiredStringBinding($textPassword),
+                alignment: .trailing,
+                requirementsTitleFont: .title3,
+                requirementsTextFont: .footnote
+            )
+            .scaleEffect(y: isEditing ? 1 : 0)
+            .frame(height: !isEditing ? 0 : nil)
+            .opacity(isEditing ? 1 : 0)
+            .allowsHitTesting(!isEditing)
         }
     }
 }
