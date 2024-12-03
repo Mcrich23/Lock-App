@@ -16,7 +16,7 @@ let package = Package(
         .iOSApplication(
             name: "Lock",
             targets: ["AppModule"],
-            bundleIdentifier: "com.Mcrich.Pass",
+            bundleIdentifier: "com.Mcrich.Lock",
             teamIdentifier: "L7JQRVXU2V",
             displayVersion: "1.0",
             bundleVersion: "1",

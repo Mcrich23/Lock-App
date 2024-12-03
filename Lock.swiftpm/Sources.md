@@ -12,3 +12,6 @@
 - https://us.norton.com/blog/emerging-threats/cybersecurity-statistics#:~:text=How%20many%20people%20get%20hacked,people%20being%20hacked%20per%20year.
 - https://www.getastra.com/blog/security-audit/cyber-security-statistics/#Headliners_for_Cybersecurity_in_2023
 - https://jumpcloud.com/blog/phishing-attack-statistics
+- https://nordvpn.com/blog/what-is-ciphertext/
+- https://stackoverflow.com/questions/9049789/aes-encryption-key-versus-iv
+- https://developer.apple.com/documentation/cryptokit/storing_cryptokit_keys_in_the_keychain
