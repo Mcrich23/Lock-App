@@ -29,7 +29,7 @@ struct EmptyableTextFieldStyle: @preconcurrency TextFieldStyle {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 15, height: 15)
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                 }
             }
         } else {
@@ -44,7 +44,7 @@ struct EmptyableTextFieldStyle: @preconcurrency TextFieldStyle {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                         }
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                         .background(.regularMaterial)
                         .clipShape(.circle)
                         .scaleEffect(0.85)

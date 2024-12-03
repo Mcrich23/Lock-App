@@ -50,7 +50,7 @@ struct PasswordItemDetailView: View {
                     
                     editableRowItem(withName: "User Name", binding: $item.userName)
                     passwordRow
-                    editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false)
+                    editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
                 }
             }
             .frame(maxWidth: 800)
@@ -75,14 +75,14 @@ struct PasswordItemDetailView: View {
         })
     }
     
-    func editableRowItem(withName name: String, binding: Binding<String>, isShowing: Bool? = nil) -> some View {
+    func editableRowItem(withName name: String, binding: Binding<String>, isShowing: Bool? = nil, valueTint: Color? = nil) -> some View {
         let binding: Binding<String?> = .init(get: { binding.wrappedValue }, set: { binding.wrappedValue = $0 ?? "" })
         
-        return editableRowItem(withName: name, binding: binding, isShowing: isShowing)
+        return editableRowItem(withName: name, binding: binding, isShowing: isShowing, valueTint: valueTint)
     }
     
     @ViewBuilder
-    func editableRowItem(withName name: String, binding: Binding<String?>, isShowing: Bool? = nil) -> some View {
+    func editableRowItem(withName name: String, binding: Binding<String?>, isShowing: Bool? = nil, valueTint: Color? = nil) -> some View {
         if let text = binding.wrappedValue, !text.isEmpty, (isShowing ?? true), !isEditing {
             Divider()
                 .matchedGeometryEffect(id: "\(name)_divider", in: namespace)
@@ -94,6 +94,7 @@ struct PasswordItemDetailView: View {
                 Spacer()
                 
                 Text(text)
+                    .foregroundStyle(valueTint ?? .primary)
                     .matchedGeometryEffect(id: "\(name)_text", in: namespace)
             }
         } else if isEditing {
@@ -107,6 +108,7 @@ struct PasswordItemDetailView: View {
                 Spacer()
                 
                 TextField(name, text: optionalToRequiredStringBinding(binding))
+                    .foregroundStyle(valueTint ?? .primary)
                     .multilineTextAlignment(.trailing)
                     .textFieldStyle(.emptyable(with: $item.userName))
                     .matchedGeometryEffect(id: "\(name)_text", in: namespace)
