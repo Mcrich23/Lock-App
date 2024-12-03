@@ -30,8 +30,18 @@ struct PasswordItemDetailView: View {
                             .background(Color.gray.secondary)
                         
                         VStack(alignment: .leading) {
-                            Text(item.name ?? item.website)
-                                .font(.title)
+                            if !isEditing {
+                                Text(item.name ?? item.website)
+                                    .font(.title)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .matchedGeometryEffect(id: "name_text", in: namespace)
+                            } else {
+                                TextField("Name", text: optionalToRequiredStringBinding($item.name))
+                                    .font(.title)
+                                    .textFieldStyle(.emptyable(with: $item.name))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .matchedGeometryEffect(id: "name_text", in: namespace)
+                            }
                         }
                         
                         Spacer()
@@ -55,6 +65,16 @@ struct PasswordItemDetailView: View {
         .toolbar {
             Button(!isEditing ? "Edit" : "Done") { isEditing.toggle() }
         }
+    }
+    
+    func optionalToRequiredStringBinding(_ binding: Binding<String?>, defaultValue: String = "") -> Binding<String> {
+        .init(get: { binding.wrappedValue ?? defaultValue }, set: { newValue in
+            if newValue.isEmpty {
+                binding.wrappedValue = nil
+            } else {
+                binding.wrappedValue = newValue
+            }
+        })
     }
     
     func editableRowItem(withName name: String, binding: Binding<String>, isShowing: Bool? = nil) -> some View {
@@ -84,7 +104,7 @@ struct PasswordItemDetailView: View {
                 
                 Spacer()
                 
-                TextField(name, text: Binding(get: { binding.wrappedValue ?? "" }, set: { binding.wrappedValue = $0 }))
+                TextField(name, text: optionalToRequiredStringBinding(binding))
                     .multilineTextAlignment(.trailing)
                     .textFieldStyle(.emptyable(with: $item.userName))
                     .matchedGeometryEffect(id: "\(name)_text", in: namespace)

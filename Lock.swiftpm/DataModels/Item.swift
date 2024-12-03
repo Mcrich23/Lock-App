@@ -32,7 +32,6 @@ final class Item: Identifiable {
         
         let encryption = aes.encrypt(string: password)
         self.password = encryption
-        print("password: \(password)")
     }
     
     init(id: UUID = .init(), name: String? = nil, website: String, userName: String? = nil, notes: String = "", totpSecret: String? = nil, password: Data? = nil) {

@@ -60,7 +60,7 @@ struct PasswordListRowView: View {
                     .frame(width: 50, height: 50)
                     .background(Color.gray.secondary)
                 
-                VStack {
+                VStack(alignment: .leading) {
                     Text(item.name ?? item.website)
                         .font(.headline)
                     
