@@ -27,7 +27,7 @@ struct LockApp: App {
                 PasswordNavigationView()
             }
         }
-        .modelContainer(for: Item.self)
+        .modelContainer(for: Item.self, isAutosaveEnabled: true)
         .environment(aes)
     }
 }

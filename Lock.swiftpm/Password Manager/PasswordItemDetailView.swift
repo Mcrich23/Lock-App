@@ -9,9 +9,12 @@ import SwiftUI
 
 struct PasswordItemDetailView: View {
     @Bindable var item: Item
+    @Environment(AES.self) var aes
+    @Environment(\.modelContext) var modelContext
     @Namespace var namespace
     
     @State var isEditing: Bool = false
+    @State var textPassword: String? = nil
     
     var body: some View {
         ScrollView {
@@ -34,66 +37,58 @@ struct PasswordItemDetailView: View {
                         Spacer()
                     }
                     
-                    if let userName = item.userName, !isEditing {
-                        Divider()
-                        
-                        HStack {
-                            Text("User Name")
-                            
-                            Spacer()
-                            
-                            Text(userName)
-                                .multilineTextAlignment(.trailing)
-                                .matchedGeometryEffect(id: "username_text", in: namespace)
+                    editableRowItem(withName: "User Name", binding: $item.userName)
+                    editableRowItem(withName: "Password", binding: $textPassword)
+                        .onChange(of: textPassword) {
+                            item.setPassword(textPassword, using: aes)
                         }
-                    } else if isEditing {
-                        Divider()
-                        
-                        HStack {
-                            Text("User Name")
-                            
-                            Spacer()
-                            
-                            TextField("UserName", text: Binding(get: { item.userName ?? "" }, set: { item.userName = $0 }))
-                                .multilineTextAlignment(.trailing)
-                                .textFieldStyle(.emptyable(with: $item.userName))
-                                .matchedGeometryEffect(id: "username_text", in: namespace)
-                        }
-                    }
-                    
-                    if let name = item.name, !name.isEmpty, !isEditing {
-                        Divider()
-                        
-                        HStack {
-                            Text("Website")
-                            
-                            Spacer()
-                            
-                            Text(item.website)
-                                .matchedGeometryEffect(id: "website_text", in: namespace)
-                        }
-                    } else if isEditing {
-                        Divider()
-                        
-                        HStack {
-                            Text("Website")
-                            
-                            Spacer()
-                            
-                            TextField("Website", text: $item.website)
-                                .multilineTextAlignment(.trailing)
-                                .textFieldStyle(.emptyable(with: $item.userName))
-                                .matchedGeometryEffect(id: "website_text", in: namespace)
-                        }
-                    }
+                    editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false)
                 }
             }
             .frame(maxWidth: 800)
             .padding()
         }
+        .onAppear(perform: {
+            self.textPassword = item.readPassword(from: aes)
+        })
         .animation(.default, value: isEditing)
         .toolbar {
             Button(!isEditing ? "Edit" : "Done") { isEditing.toggle() }
+        }
+    }
+    
+    func editableRowItem(withName name: String, binding: Binding<String>, isShowing: Bool? = nil) -> some View {
+        let binding: Binding<String?> = .init(get: { binding.wrappedValue }, set: { binding.wrappedValue = $0 ?? "" })
+        
+        return editableRowItem(withName: name, binding: binding, isShowing: isShowing)
+    }
+    
+    @ViewBuilder
+    func editableRowItem(withName name: String, binding: Binding<String?>, isShowing: Bool? = nil) -> some View {
+        if let text = binding.wrappedValue, !text.isEmpty, (isShowing ?? true), !isEditing {
+            Divider()
+            
+            HStack {
+                Text(name)
+                
+                Spacer()
+                
+                Text(text)
+                    .matchedGeometryEffect(id: "\(name)_text", in: namespace)
+            }
+        } else if isEditing {
+            Divider()
+            
+            HStack {
+                Text(name)
+                
+                Spacer()
+                
+                TextField(name, text: Binding(get: { binding.wrappedValue ?? "" }, set: { binding.wrappedValue = $0 }))
+                    .multilineTextAlignment(.trailing)
+                    .textFieldStyle(.emptyable(with: $item.userName))
+                    .matchedGeometryEffect(id: "\(name)_text", in: namespace)
+            }
         }
     }
 }

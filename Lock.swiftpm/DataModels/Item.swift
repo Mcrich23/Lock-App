@@ -16,13 +16,32 @@ final class Item: Identifiable {
     var notes: String
     var totpSecret: String?
     var userName: String?
+    private(set) var password: Data?
     
-    init(id: UUID = .init(), name: String? = nil, website: String, userName: String? = nil, notes: String = "", totpSecret: String? = nil) {
+    func readPassword(from aes: AES) -> String? {
+        guard let password else { return nil }
+        
+        return aes.decrypt(data: password)
+    }
+    
+    func setPassword(_ password: String?, using aes: AES) {
+        guard let password else {
+            self.password = nil
+            return
+        }
+        
+        let encryption = aes.encrypt(string: password)
+        self.password = encryption
+        print("password: \(password)")
+    }
+    
+    init(id: UUID = .init(), name: String? = nil, website: String, userName: String? = nil, notes: String = "", totpSecret: String? = nil, password: Data? = nil) {
         self.id = id
         self.name = name
         self.website = website
         self.notes = notes
         self.userName = userName
         self.totpSecret = totpSecret
+        self.password = password
     }
 }
