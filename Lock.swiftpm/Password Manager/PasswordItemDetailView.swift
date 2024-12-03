@@ -122,6 +122,7 @@ struct PasswordItemDetailView: View {
                 
 //                Text(isShowingPassword ? text : "**************")
                 Text(text)
+                    .textSelection(.enabled)
                     .matchedGeometryEffect(id: "password_text", in: namespace)
                     .onTapGesture {
                         isShowingPassword.toggle()
