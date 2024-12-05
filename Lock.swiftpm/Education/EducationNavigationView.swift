@@ -25,7 +25,7 @@ class EductionNavigationController {
         }
     }
     
-    var shownView: ShownView = .stateOfSecurity
+    var shownView: ShownView = .poorPassword
 }
 
 struct EducationNavigationView: View {
