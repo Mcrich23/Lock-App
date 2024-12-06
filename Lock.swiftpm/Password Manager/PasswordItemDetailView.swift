@@ -18,6 +18,7 @@ struct PasswordItemDetailView: View {
     @State var isShowingPassword: Bool = false
     @State var textPassword: String? = nil
     @State var isShowingMFAEducation = false
+    let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
     
     var body: some View {
         ScrollView {
@@ -59,6 +60,9 @@ struct PasswordItemDetailView: View {
             .frame(maxWidth: 800)
             .padding()
         }
+        .onReceive(timer, perform: { _ in
+            updateTotp()
+        })
         .onAppear(perform: {
             self.textPassword = item.readPassword(from: aes)
         })
@@ -209,7 +213,7 @@ struct PasswordItemDetailView: View {
                 Text("Multi-Factor Authentication")
                     .matchedGeometryEffect(id: "mfa_name", in: namespace)
                 
-                if !isEditing {
+                if !isEditing && otpText == nil {
                     Spacer()
                         .matchedGeometryEffect(id: "mfa_spacer", in: namespace)
                 }
@@ -232,7 +236,7 @@ struct PasswordItemDetailView: View {
                     }
                     .matchedGeometryEffect(id: "mfa_learn_more", in: namespace)
                     .background(alignment: .trailing) {
-                        if !isEditing {
+                        if !isEditing && otpText == nil {
                             Button("Setup") {}
                                 .buttonStyle(.borderedProminent)
                                 .hidden()
@@ -240,23 +244,91 @@ struct PasswordItemDetailView: View {
                         }
                     }
                 
-                if isEditing {
+                if isEditing || otpText != nil {
                     Spacer()
                         .matchedGeometryEffect(id: "mfa_spacer", in: namespace)
+                }
+                
+                if let otpText {
+                    HStack(spacing: 20) {
+                        Text(otpText)
+                        
+                        if let time = timeUntilNewOtp {
+                            CircleCountdownView(progress: 1-((time-1)/30))
+                                .frame(width: 40, height: 40)
+                                .overlay {
+                                    Text("\(30-Int(time))")
+                                }
+                        }
+                    }
+                    .background(alignment: .trailing) {
+                        if !isEditing {
+                            Button("Reset", action: resetTotp)
+                                .buttonStyle(.borderedProminent)
+                                .hidden()
+                                .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                        }
+                    }
+                }
+                
+                if isEditing && !isShowingSetTotpSecret {
+                    if otpText == nil {
+                        Button("Setup") { isShowingSetTotpSecret.toggle() }
+                            .buttonStyle(.borderedProminent)
+                            .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                    } else {
+                        Button("Reset", action: resetTotp)
+                            .buttonStyle(.borderedProminent)
+                            .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                            .padding(.leading, 15)
+                    }
+                }
+            }
+            
+            if isEditing && isShowingSetTotpSecret {
+                HStack {
+                    TextField("Enter Secret", text: $enteredTotpSecretText)
+                        .textFieldStyle(.emptyable(with: Binding(get: { enteredTotpSecretText }, set: { enteredTotpSecretText = $0 ?? "" })))
+                        .focused($isTotpSecretEntryFocused)
+                        .onSubmit(setupTotp)
                     
-                    Button("Setup") {}
-                        .buttonStyle(.borderedProminent)
-                        .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                    Button("Setup", action: setupTotp)
+                    .buttonStyle(.borderedProminent)
+                    .matchedGeometryEffect(id: "mfa_setup", in: namespace)
                 }
             }
         }
+        .animation(.default, value: isShowingSetTotpSecret)
     }
     
+    // MARK: TOTP
     @State private(set) var timeUntilNewOtp: TimeInterval?
     
-    @State private(set) var otpText = ""
-    @State private var totpSecretText = UUID().uuidString
+    @State private(set) var otpText: String?
+    @State private var isShowingSetTotpSecret: Bool = false
+    @State private var totpSecretText: String?
+    @State private var enteredTotpSecretText: String = ""
+    @FocusState private var isTotpSecretEntryFocused
+    
+    func setupTotp() {
+        withAnimation {
+            isTotpSecretEntryFocused = false
+            isShowingSetTotpSecret = false
+            totpSecretText = enteredTotpSecretText
+        }
+    }
+    
+    func resetTotp() {
+        withAnimation {
+            totpSecretText = nil
+            enteredTotpSecretText = ""
+            otpText = nil
+        }
+    }
+    
     func updateTotp() {
+        guard let totpSecretText else { return }
+        
         let period = TimeInterval(30)
         let digits = 6
         guard let secret = totpSecretText.data(using: .utf8) else { return }
