@@ -13,7 +13,9 @@ struct MFAEductionView: View {
     
     var body: some View {
         if isShowingMainView {
-            Setup2FAView()
+            NavigationStack {
+                Setup2FAView()
+            }
                 .transition(.blurReplace)
         } else {
             MFAEducationIntroView(isShowingMainView: $isShowingMainView, isShowingMFA: isShowingMFA)
@@ -68,73 +70,83 @@ private struct MFAEducationIntroView: View {
     }
 }
 
-private struct Setup2FAView: View {
+struct Setup2FAView: View {
     let timer = UpsideDownAccuteTriangle.defaultTimer
-    @State var isShowingMFAGraphic: Bool = false
-    @State var isShowingMFATextUnderGraphic: Bool = false
-    @State var isShowingMFAText: Bool = false
-    @State var isShowingMFA1: Bool = false
-    @State var isShowingMFA2: Bool = false
-    @State var isShowingMFA3: Bool = false
     @State var controller = Setup2FAController()
+    @State var isShowingMFAGraphic: Bool
+    @State var isShowingMFATextUnderGraphic: Bool
+    @State var isShowingMFAText: Bool
+    @State var isShowingMFA1: Bool
+    @State var isShowingMFA2: Bool
+    @State var isShowingMFA3: Bool
+    
+    init(isAnimatedIntro: Bool = true) {
+        isShowingMFAGraphic = !isAnimatedIntro
+        isShowingMFATextUnderGraphic = !isAnimatedIntro
+        isShowingMFAText = !isAnimatedIntro
+        isShowingMFA1 = !isAnimatedIntro
+        isShowingMFA2 = !isAnimatedIntro
+        isShowingMFA3 = !isAnimatedIntro
+    }
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("Setup Multi-Factor Authentication")
-                    .font(.title)
-                    .bold()
-                    .multilineTextAlignment(.center)
-                
-                VStack(alignment: .leading) {
-                    Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. You create an additional step to prove your identity when logging in. This can be through SMS, Authenticator Apps, Passkeys, and More.")
-                }
-                .padding(.top, 1)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: 600, alignment: .leading)
-                
-                HStack {
-                    mfaGraphic
-                    Divider()
-                        .padding()
-                    mfaHackerGraphic
-                }
-                    .opacity(isShowingMFAGraphic ? 1 : 0)
-                
-                VStack(alignment: .leading) {
-                    Text("MFA is highly recommended, because if one layer becomes comprimised, your account is still safe from attackers.")
-                }
-                .padding(.top, 1)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: 600, alignment: .leading)
-                .opacity(isShowingMFATextUnderGraphic ? 1 : 0)
-                .padding(.bottom)
-                
-                VStack(alignment: .leading) {
-                    Text("Setup MFA")
-                        .font(.title2)
-                        .bold()
-                }
-                .padding(.top, 1)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: 700, alignment: .leading)
-                .opacity(isShowingMFAText ? 1 : 0)
-                
-                MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
-                    SMSEducationView()
-                }
-                .opacity(isShowingMFA1 ? 1 : 0)
-                
-                MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
-                    TOTPEducationView()
-                }
-                .opacity(isShowingMFA2 ? 1 : 0)
-                
-                MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
-                    PasskeysEducationView()
-                }
-                .opacity(isShowingMFA3 ? 1 : 0)
+        VStack {
+            Text("Setup Multi-Factor Authentication")
+                .font(.title)
+                .bold()
+                .multilineTextAlignment(.center)
+            
+            VStack(alignment: .leading) {
+                Text("Multi-Factor Authentication (MFA) is a way to add an extra layer of security to your account. You create an additional step to prove your identity when logging in. This can be through SMS, Authenticator Apps, Passkeys, and More.")
             }
+            .padding(.top, 1)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: 600, alignment: .leading)
+            
+            HStack {
+                mfaGraphic
+                Divider()
+                    .padding()
+                mfaHackerGraphic
+            }
+            .opacity(isShowingMFAGraphic ? 1 : 0)
+            
+            VStack(alignment: .leading) {
+                Text("MFA is highly recommended, because if one layer becomes comprimised, your account is still safe from attackers.")
+            }
+            .padding(.top, 1)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: 600, alignment: .leading)
+            .opacity(isShowingMFATextUnderGraphic ? 1 : 0)
+            .padding(.bottom)
+            
+            VStack(alignment: .leading) {
+                Text("Setup MFA")
+                    .font(.title2)
+                    .bold()
+            }
+            .padding(.top, 1)
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: 700, alignment: .leading)
+            .opacity(isShowingMFAText ? 1 : 0)
+            
+            MFANavigationLink(image: Image(systemName: "text.bubble"), title: "SMS Text Message", description: "Send a your phone a text message containing the MFA code", isCompleted: controller.completedSms) {
+                SMSEducationView()
+                    .environment(controller)
+            }
+            .opacity(isShowingMFA1 ? 1 : 0)
+            
+            MFANavigationLink(image: Image(systemName: "lock.app.dashed"), title: "Authenticator App", description: "Use a time based one-time password (TOTP) to in an authenticator app to login", isCompleted: controller.completedTotp) {
+                TOTPEducationView()
+                    .environment(controller)
+            }
+            .opacity(isShowingMFA2 ? 1 : 0)
+            
+            MFANavigationLink(image: Image(systemName: "person.badge.key"), title: "Passkeys", description: "Authenticate with an application or website through Passkeys and FaceID", isCompleted: controller.completedPasskeys) {
+                PasskeysEducationView()
+                    .environment(controller)
+            }
+            .opacity(isShowingMFA3 ? 1 : 0)
             .padding()
         }
         .task {

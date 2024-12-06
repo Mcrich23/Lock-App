@@ -11,7 +11,6 @@ import SwiftData
 struct PasswordListView: View {
     @Query private var items: [Item]
     @Environment(\.modelContext) var modelContext
-    @State var isShowingEducation = false
     
     var body: some View {
         List {
@@ -26,24 +25,6 @@ struct PasswordListView: View {
                 Button(action: addItem) {
                     Image(systemName: "plus.circle")
                 }
-            }
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Learn") {
-                    isShowingEducation.toggle()
-                }
-            }
-        }
-        .sheet(isPresented: $isShowingEducation) {
-            NavigationStack {
-                EducationNavigationView()
-                    .toolbar {
-                        Button {
-                            isShowingEducation = false
-                        } label: {
-                            Label("Close", systemImage: "xmark.circle")
-                        }
-                    }
             }
         }
     }
