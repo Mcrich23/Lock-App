@@ -65,9 +65,11 @@ struct PasswordItemDetailView: View {
         })
         .onAppear(perform: {
             self.textPassword = item.readPassword(from: aes)
+            self.totpSecretText = item.readTotpSecret(from: aes)
         })
         .onChange(of: item, {
             self.textPassword = item.readPassword(from: aes)
+            self.totpSecretText = item.readTotpSecret(from: aes)
         })
         .animation(.default, value: isEditing)
         .toolbar {
@@ -316,6 +318,7 @@ struct PasswordItemDetailView: View {
             isShowingSetTotpSecret = false
             totpSecretText = enteredTotpSecretText
         }
+        item.setTotpSecret(enteredTotpSecretText, using: aes)
     }
     
     func resetTotp() {
@@ -324,6 +327,7 @@ struct PasswordItemDetailView: View {
             enteredTotpSecretText = ""
             otpText = nil
         }
+        item.setTotpSecret(nil, using: aes)
     }
     
     func updateTotp() {

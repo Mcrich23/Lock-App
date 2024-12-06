@@ -14,9 +14,9 @@ final class Item: Identifiable {
     var name: String?
     var website: String
     var notes: String
-    var totpSecret: String?
     var userName: String?
     private(set) var password: Data?
+    private(set) var totpSecret: Data?
     
     func readPassword(from aes: AES) -> String? {
         guard let password else { return nil }
@@ -34,7 +34,23 @@ final class Item: Identifiable {
         self.password = encryption
     }
     
-    init(id: UUID = .init(), name: String? = nil, website: String, userName: String? = nil, notes: String = "", totpSecret: String? = nil, password: Data? = nil) {
+    func readTotpSecret(from aes: AES) -> String? {
+        guard let totpSecret else { return nil }
+        
+        return aes.decrypt(data: totpSecret)
+    }
+    
+    func setTotpSecret(_ totpSecret: String?, using aes: AES) {
+        guard let totpSecret else {
+            self.totpSecret = nil
+            return
+        }
+        
+        let encryption = aes.encrypt(string: totpSecret)
+        self.totpSecret = encryption
+    }
+    
+    init(id: UUID = .init(), name: String? = nil, website: String, userName: String? = nil, notes: String = "", totpSecret: Data? = nil, password: Data? = nil) {
         self.id = id
         self.name = name
         self.website = website
