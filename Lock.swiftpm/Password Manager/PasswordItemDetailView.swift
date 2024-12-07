@@ -339,7 +339,7 @@ struct PasswordItemDetailView: View {
                 totpSecretText = enteredTotpSecretText
             }
         }
-        item.setTotpSecret(enteredTotpSecretText, using: aes)
+        item.setTotpSecret(totpSecretText, using: aes)
     }
     
     func resetTotp() {
