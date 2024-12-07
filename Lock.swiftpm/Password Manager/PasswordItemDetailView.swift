@@ -297,7 +297,7 @@ struct PasswordItemDetailView: View {
                 
                 HStack {
                     TextField("Enter Secret", text: $enteredTotpSecretText)
-                        .textFieldStyle(.emptyable(with: Binding(get: { enteredTotpSecretText }, set: { enteredTotpSecretText = $0 ?? "" })))
+                        .textFieldStyle(.roundedBorder)
                         .focused($isTotpSecretEntryFocused)
                         .onSubmit(setupTotp)
                     
