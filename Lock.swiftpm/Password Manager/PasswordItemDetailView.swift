@@ -65,7 +65,7 @@ struct PasswordItemDetailView: View {
         })
         .onAppear(perform: {
             self.textPassword = item.readPassword(from: aes)
-            self.totpSecretText = item.readTotpSecret(from: aes)
+            self.totpSecretText = item.readTotpSecret(from: aes)?.replacingOccurrences(of: "\n", with: "")
         })
         .onChange(of: item, {
             self.textPassword = item.readPassword(from: aes)
@@ -329,17 +329,17 @@ struct PasswordItemDetailView: View {
         
         let qrSecret = scannerTotpSecretQuery.first(where: { $0.name == "secret" })?.value ?? scannerTotpSecretText
         
+        let newTotpSecretText = qrSecret.isEmpty ? enteredTotpSecretText : qrSecret
+        
         withAnimation {
             isTotpSecretEntryFocused = false
             isShowingSetTotpSecret = false
-            
-            if !qrSecret.isEmpty {
-                totpSecretText = qrSecret
-            } else {
-                totpSecretText = enteredTotpSecretText
-            }
+            totpSecretText = newTotpSecretText
         }
-        item.setTotpSecret(totpSecretText, using: aes)
+        item.setTotpSecret(newTotpSecretText, using: aes)
+        print("set secret: \(newTotpSecretText)")
+        let secret = item.readTotpSecret(from: aes)
+        print("read secret: \(secret)")
     }
     
     func resetTotp() {
