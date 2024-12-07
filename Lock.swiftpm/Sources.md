@@ -18,3 +18,5 @@
 ## Code
 - https://stackoverflow.com/questions/9049789/aes-encryption-key-versus-iv
 - https://developer.apple.com/documentation/cryptokit/storing_cryptokit_keys_in_the_keychain
+- https://www.createwithswift.com/reading-qr-codes-and-barcodes-with-the-vision-framework/
+- https://medium.com/@jpmtech/how-to-make-a-qr-or-barcode-scanner-in-swiftui-68d8dae8e908

@@ -31,6 +31,9 @@ let package = Package(
                 .landscapeRight(.when(deviceFamilies: [.pad])),
                 .landscapeLeft(.when(deviceFamilies: [.pad])),
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
+            ],
+            capabilities: [
+                .camera(purposeString: "Lock would like to use the camera for MFA setup")
             ]
         )
     ],

@@ -288,6 +288,13 @@ struct PasswordItemDetailView: View {
             }
             
             if isEditing && isShowingSetTotpSecret {
+                DataScannerRepresentable(shouldStartScanning: .constant(true), scannedText: $scannerTotpSecretText, dataToScanFor: [.barcode()])
+                    .frame(width: 300, height: 300)
+                    .onChange(of: scannerTotpSecretText) {
+                        guard !scannerTotpSecretText.isEmpty else { return }
+                        setupTotp()
+                    }
+                
                 HStack {
                     TextField("Enter Secret", text: $enteredTotpSecretText)
                         .textFieldStyle(.emptyable(with: Binding(get: { enteredTotpSecretText }, set: { enteredTotpSecretText = $0 ?? "" })))
@@ -310,13 +317,27 @@ struct PasswordItemDetailView: View {
     @State private var isShowingSetTotpSecret: Bool = false
     @State private var totpSecretText: String?
     @State private var enteredTotpSecretText: String = ""
+    @State private var scannerTotpSecretText: String = ""
     @FocusState private var isTotpSecretEntryFocused
     
     func setupTotp() {
+        let scannerTotpSecretQuery: [URLQueryItem] = URL(string: scannerTotpSecretText)?.query(percentEncoded: false)?.split(separator: "&").compactMap { str in
+            let split = str.split(separator: "=")
+            guard split.count == 2 else { return nil }
+            return URLQueryItem(name: String(split[0]), value: String(split[1]))
+        } ?? []
+        
+        let qrSecret = scannerTotpSecretQuery.first(where: { $0.name == "secret" })?.value ?? scannerTotpSecretText
+        
         withAnimation {
             isTotpSecretEntryFocused = false
             isShowingSetTotpSecret = false
-            totpSecretText = enteredTotpSecretText
+            
+            if !qrSecret.isEmpty {
+                totpSecretText = qrSecret
+            } else {
+                totpSecretText = enteredTotpSecretText
+            }
         }
         item.setTotpSecret(enteredTotpSecretText, using: aes)
     }
@@ -324,6 +345,7 @@ struct PasswordItemDetailView: View {
     func resetTotp() {
         withAnimation {
             totpSecretText = nil
+            scannerTotpSecretText = ""
             enteredTotpSecretText = ""
             otpText = nil
         }
