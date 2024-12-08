@@ -12,6 +12,7 @@ struct PasswordItemDetailView: View {
     @Bindable var item: Item
     @Environment(AES.self) var aes
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.openURL) var openURL
     @Namespace var namespace
     
     @State var isEditing: Bool = false
@@ -19,6 +20,16 @@ struct PasswordItemDetailView: View {
     @State var textPassword: String? = nil
     @State var isShowingMFAEducation = false
     let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
+    
+    var websiteURL: URL? {
+        if let webUrl = URL(string: item.website), webUrl.scheme == nil, let url = URL(string: "https://\(item.website)") {
+            return url
+        } else if let url = URL(string: item.website) {
+            return url
+        }
+        
+        return nil
+    }
     
     var body: some View {
         ScrollView {
@@ -52,10 +63,33 @@ struct PasswordItemDetailView: View {
                             Spacer()
                         }
                         
-                        editableRowItem(withName: "User Name", binding: $item.userName)
-                        passwordRow
-                        editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
-                        mfaRow(width: geo.size.width)
+                        Group {
+                            editableRowItem(withName: "User Name", binding: $item.userName)
+                            passwordRow
+                            
+                            if isEditing {
+                                editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
+                            } else {
+                                editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
+                                    .onTapGesture {
+                                        if let websiteURL {
+                                            openURL(websiteURL)
+                                        }
+                                    }
+                                    .contextMenu {
+                                        if let websiteURL {
+                                            ShareLink(item: websiteURL)
+                                            Link(destination: websiteURL) {
+                                                Label("Open in Safari", systemImage: "safari")
+                                            }
+                                        }
+                                    }
+                            }
+                            
+                            mfaRow(width: geo.size.width)
+                        }
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                     }
                 }
             }
