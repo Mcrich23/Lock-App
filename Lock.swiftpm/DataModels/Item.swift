@@ -91,6 +91,10 @@ final class Item: Identifiable {
         } catch {
             print(error)
             let favicon = try await getWebsiteFavicon(from: headString)
+            
+            guard let favicon else {
+                return try await getWebsiteTopLevelFavicon()
+            }
             return favicon
         }
     }
@@ -146,9 +150,15 @@ final class Item: Identifiable {
         
         guard let endIndexOfManifest else { return nil }
         let manifestString = headHtmlString[beginIndexOfManifest...endIndexOfManifest]
-        let manifestURLString = manifestString.replacingOccurrences(of: "<link rel=\"manifest\" href=\"", with: "").replacingOccurrences(of: "\"/>", with: "")
+        let manifestURLString = manifestString.replacingOccurrences(of: "<link rel=\"manifest\" href=\"", with: "").replacingOccurrences(of: "\"/>", with: "").replacingOccurrences(of: "\">", with: "")
         
-        guard let manifestURL = URL(string: manifestURLString) else { return nil }
+        let manifestURL: URL
+        
+        if let newManifestURL = URL(string: manifestURLString), newManifestURL.scheme != nil {
+            manifestURL = newManifestURL
+        } else {
+            manifestURL = websiteURL.appending(path: manifestURLString)
+        }
         
         let (manifestData, _) = try await URLSession.shared.data(from: manifestURL)
         let jsonDecoder = JSONDecoder()
@@ -161,7 +171,7 @@ final class Item: Identifiable {
         
         let iconURL: URL
         
-        if let newIconURL = URL(string: iconURLString) {
+        if let newIconURL = URL(string: iconURLString), newIconURL.scheme != nil {
             iconURL = newIconURL
         } else {
             if let startUrl = manifest.startUrl, startUrl != "/" {
