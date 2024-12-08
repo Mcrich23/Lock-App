@@ -22,39 +22,41 @@ struct PasswordItemDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack {
-                GroupBox {
-                    HStack {
-                        Image(systemName: "globe")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 30, height: 30)
-                            .foregroundStyle(.white)
-                            .frame(width: 50, height: 50)
-                            .background(Color.gray.secondary)
-                        
-                        VStack(alignment: .leading) {
-                            if !isEditing {
-                                Text(item.name ?? item.website)
-                                    .font(.title)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .matchedGeometryEffect(id: "name_text", in: namespace)
-                            } else {
-                                TextField("Name", text: optionalToRequiredStringBinding($item.name))
-                                    .font(.title)
-                                    .textFieldStyle(.emptyable(with: $item.name))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .matchedGeometryEffect(id: "name_text", in: namespace)
+            GeometryReader { geo in
+                VStack {
+                    GroupBox {
+                        HStack {
+                            Image(systemName: "globe")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30, height: 30)
+                                .foregroundStyle(.white)
+                                .frame(width: 50, height: 50)
+                                .background(Color.gray.secondary)
+                            
+                            VStack(alignment: .leading) {
+                                if !isEditing {
+                                    Text(item.name ?? item.website)
+                                        .font(.title)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .matchedGeometryEffect(id: "name_text", in: namespace)
+                                } else {
+                                    TextField("Name", text: optionalToRequiredStringBinding($item.name))
+                                        .font(.title)
+                                        .textFieldStyle(.emptyable(with: $item.name))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .matchedGeometryEffect(id: "name_text", in: namespace)
+                                }
                             }
+                            
+                            Spacer()
                         }
                         
-                        Spacer()
+                        editableRowItem(withName: "User Name", binding: $item.userName)
+                        passwordRow
+                        editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
+                        mfaRow(width: geo.size.width)
                     }
-                    
-                    editableRowItem(withName: "User Name", binding: $item.userName)
-                    passwordRow
-                    editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
-                    mfaRow
                 }
             }
             .frame(maxWidth: 800)
@@ -206,13 +208,60 @@ struct PasswordItemDetailView: View {
     }
     
     @ViewBuilder
-    var mfaRow: some View {
+    var mfaLearnMoreButton: some View {
+        Button("Learn More") { isShowingMFAEducation.toggle() }
+            .buttonStyle(.bordered)
+            .popover(isPresented: $isShowingMFAEducation) {
+                NavigationStack {
+                    Setup2FAView(isAnimatedIntro: false)
+                        .toolbar {
+                            Button {
+                                isShowingMFAEducation = false
+                            } label: {
+                                Label("Close", systemImage: "xmark.circle")
+                            }
+                        }
+                }
+                .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, height: UIDevice.current.userInterfaceIdiom == .phone ? nil : 800)
+                .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .phone ? 0 : nil)
+            }
+            .matchedGeometryEffect(id: "mfa_learn_more", in: namespace)
+            .background(alignment: .trailing) {
+                if !isEditing && otpText == nil {
+                    Button("Setup") {}
+                        .buttonStyle(.borderedProminent)
+                        .hidden()
+                        .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                }
+            }
+    }
+    
+    @ViewBuilder
+    var mfaSetupResetButton: some View {
+        if isEditing && !isShowingSetTotpSecret {
+            if otpText == nil {
+                Button("Setup") { isShowingSetTotpSecret.toggle() }
+                    .buttonStyle(.borderedProminent)
+                    .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+            } else {
+                Button("Reset", action: resetTotp)
+                    .buttonStyle(.borderedProminent)
+                    .matchedGeometryEffect(id: "mfa_setup", in: namespace)
+                    .padding(.leading, 15)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func mfaRow(width: CGFloat) -> some View {
+        let hasTwoRows = width <= 375
+        
         VStack {
             Divider()
                 .matchedGeometryEffect(id: "mfa_divider", in: namespace)
             
             HStack {
-                Text("Multi-Factor Authentication")
+                Text("Multi-Factor Authentication\(otpText != nil && hasTwoRows ? ": " : "")")
                     .matchedGeometryEffect(id: "mfa_name", in: namespace)
                 
                 if !isEditing && otpText == nil {
@@ -220,31 +269,9 @@ struct PasswordItemDetailView: View {
                         .matchedGeometryEffect(id: "mfa_spacer", in: namespace)
                 }
                 
-                Button("Learn More") { isShowingMFAEducation.toggle() }
-                    .buttonStyle(.bordered)
-                    .popover(isPresented: $isShowingMFAEducation) {
-                        NavigationStack {
-                            Setup2FAView(isAnimatedIntro: false)
-                                .toolbar {
-                                    Button {
-                                        isShowingMFAEducation = false
-                                    } label: {
-                                        Label("Close", systemImage: "xmark.circle")
-                                    }
-                                }
-                        }
-                        .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, height: UIDevice.current.userInterfaceIdiom == .phone ? nil : 800)
-                        .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .phone ? 0 : nil)
-                    }
-                    .matchedGeometryEffect(id: "mfa_learn_more", in: namespace)
-                    .background(alignment: .trailing) {
-                        if !isEditing && otpText == nil {
-                            Button("Setup") {}
-                                .buttonStyle(.borderedProminent)
-                                .hidden()
-                                .matchedGeometryEffect(id: "mfa_setup", in: namespace)
-                        }
-                    }
+                if !hasTwoRows {
+                    mfaLearnMoreButton
+                }
                 
                 if isEditing || otpText != nil {
                     Spacer()
@@ -252,7 +279,7 @@ struct PasswordItemDetailView: View {
                 }
                 
                 if let otpText {
-                    HStack(spacing: 20) {
+                    HStack(spacing: hasTwoRows ? 10 : 20) {
                         Text(otpText)
                         
                         if let time = timeUntilNewOtp {
@@ -273,16 +300,19 @@ struct PasswordItemDetailView: View {
                     }
                 }
                 
-                if isEditing && !isShowingSetTotpSecret {
-                    if otpText == nil {
-                        Button("Setup") { isShowingSetTotpSecret.toggle() }
-                            .buttonStyle(.borderedProminent)
-                            .matchedGeometryEffect(id: "mfa_setup", in: namespace)
-                    } else {
-                        Button("Reset", action: resetTotp)
-                            .buttonStyle(.borderedProminent)
-                            .matchedGeometryEffect(id: "mfa_setup", in: namespace)
-                            .padding(.leading, 15)
+                if !hasTwoRows {
+                    mfaSetupResetButton
+                }
+            }
+            
+            if hasTwoRows {
+                HStack {
+                    mfaLearnMoreButton
+                    
+                    Spacer()
+                    
+                    if isEditing && !isShowingSetTotpSecret {
+                        mfaSetupResetButton
                     }
                 }
             }
