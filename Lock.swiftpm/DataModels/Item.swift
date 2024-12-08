@@ -80,6 +80,10 @@ final class Item: Identifiable {
             
             guard let pwaIcon else {
                 let favicon = try await getWebsiteFavicon(from: headString)
+                
+                guard let favicon else {
+                    return try await getWebsiteTopLevelFavicon()
+                }
                 return favicon
             }
             
@@ -89,6 +93,16 @@ final class Item: Identifiable {
             let favicon = try await getWebsiteFavicon(from: headString)
             return favicon
         }
+    }
+    
+    private func getWebsiteTopLevelFavicon() async throws -> UIImage? {
+        guard let websiteURL else { throw URLError(.badURL) }
+        
+        let faviconURL = websiteURL.appendingPathComponent("favicon.ico")
+        
+        let (faviconData, _) = try await URLSession.shared.data(from: faviconURL)
+        
+        return UIImage(data: faviconData)
     }
     
     private func getWebsiteFavicon(from headHtmlString: String.SubSequence) async throws -> UIImage? {
@@ -110,7 +124,9 @@ final class Item: Identifiable {
         
         guard let faviconURLString,
               let faviconURL = URL(string: String(faviconURLString))
-        else { return nil }
+        else {
+            return nil
+        }
         
         let (faviconData, _) = try await URLSession.shared.data(from: faviconURL)
         
@@ -148,7 +164,11 @@ final class Item: Identifiable {
         if let newIconURL = URL(string: iconURLString) {
             iconURL = newIconURL
         } else {
-            iconURL = websiteURL.appending(path: manifest.startUrl ?? "").appending(path: iconURLString)
+            if let startUrl = manifest.startUrl, startUrl != "/" {
+                iconURL = websiteURL.appending(path: startUrl).appending(path: iconURLString)
+            } else {
+                iconURL = websiteURL.appending(path: iconURLString)
+            }
         }
         
         let (iconData, _) = try await URLSession.shared.data(from: iconURL)
