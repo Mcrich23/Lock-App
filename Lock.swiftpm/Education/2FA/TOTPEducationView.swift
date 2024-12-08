@@ -41,7 +41,7 @@ struct TOTPEducationView: View {
             Text("Since the invention of SMS Multi-Factor Authentication, Time-Based One Time Passcodes (TOTP) have become a very popular method of authentication. It provides a unique code based on a private key and time, often every 30 seconds. This is not only secure, but also very easy to use and straight forward. This is typically setup with a QR code.")
             
             GeometryReader { geo in
-                VStack {
+                VStack(alignment: .center) {
                     if let qrCode {
                         Image(uiImage: qrCode)
                             .resizable()
@@ -52,6 +52,7 @@ struct TOTPEducationView: View {
                             .aspectRatio(contentMode: .fit)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .center)
                 .overlay {
                     VStack(spacing: 0) {
                         ForEach(Array(1...4), id: \.self) { i in

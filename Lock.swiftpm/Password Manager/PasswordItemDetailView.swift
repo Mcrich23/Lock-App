@@ -233,8 +233,8 @@ struct PasswordItemDetailView: View {
                                     }
                                 }
                         }
-                        .frame(width: 600, height: 800)
-                        .padding(.horizontal)
+                        .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, height: UIDevice.current.userInterfaceIdiom == .phone ? nil : 800)
+                        .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .phone ? 0 : nil)
                     }
                     .matchedGeometryEffect(id: "mfa_learn_more", in: namespace)
                     .background(alignment: .trailing) {
