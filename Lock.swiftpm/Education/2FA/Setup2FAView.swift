@@ -124,7 +124,7 @@ struct Setup2FAView: View {
                     .padding(.bottom)
                     
                     VStack(alignment: .leading) {
-                        Text("Setup MFA")
+                        Text("Methods")
                             .font(.title2)
                             .bold()
                     }
