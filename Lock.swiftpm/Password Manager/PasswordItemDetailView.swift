@@ -49,6 +49,7 @@ struct PasswordItemDetailView: View {
                                 Text(item.name ?? item.website)
                                     .font(.title)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .textSelection(.enabled)
                                     .matchedGeometryEffect(id: "name_text", in: namespace)
                             } else {
                                 TextField("Name", text: optionalToRequiredStringBinding($item.name))
@@ -145,6 +146,7 @@ struct PasswordItemDetailView: View {
                 Spacer()
                 
                 Text(text)
+                    .textSelection(.enabled)
                     .foregroundStyle(valueTint ?? .primary)
                     .matchedGeometryEffect(id: "\(name)_text", in: namespace)
             }
@@ -318,13 +320,7 @@ struct PasswordItemDetailView: View {
                 if let otpText {
                     HStack(spacing: hasTwoRows ? 10 : 20) {
                         Text(otpText)
-                            .contextMenu {
-                                Button(action: {
-                                    UIPasteboard.general.string = otpText
-                                }) {
-                                    Label("Copy to clipboard", systemImage: "doc.on.doc")
-                                }
-                             }
+                            .textSelection(.enabled)
                         
                         if let time = timeUntilNewOtp {
                             CircleCountdownView(progress: 1-((time-1)/30))
