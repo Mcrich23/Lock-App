@@ -52,13 +52,7 @@ struct PasswordListRowView: View {
     var body: some View {
         NavigationLink(value: item) {
             HStack {
-                Image(systemName: "globe")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 30, height: 30)
-                    .foregroundStyle(.white)
-                    .frame(width: 50, height: 50)
-                    .background(Color.gray.secondary)
+                PasswordIcon(imageData: item.image)
                 
                 VStack(alignment: .leading) {
                     Text(item.name ?? item.website)

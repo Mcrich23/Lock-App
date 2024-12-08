@@ -21,28 +21,12 @@ struct PasswordItemDetailView: View {
     @State var isShowingMFAEducation = false
     let timer = Timer.publish(every: 0.001, on: .main, in: .common).autoconnect()
     
-    var websiteURL: URL? {
-        if let webUrl = URL(string: item.website), webUrl.scheme == nil, let url = URL(string: "https://\(item.website)") {
-            return url
-        } else if let url = URL(string: item.website) {
-            return url
-        }
-        
-        return nil
-    }
-    
     var body: some View {
         ScrollView {
             GeometryReader { geo in
                 VStack {
                     HStack {
-                        Image(systemName: "globe")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 30, height: 30)
-                            .foregroundStyle(.white)
-                            .frame(width: 50, height: 50)
-                            .background(Color.gray.secondary)
+                        PasswordIcon(imageData: item.image)
                         
                         VStack(alignment: .leading) {
                             if !isEditing {
@@ -72,12 +56,12 @@ struct PasswordItemDetailView: View {
                         } else {
                             editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
                                 .onTapGesture {
-                                    if let websiteURL {
+                                    if let websiteURL = item.websiteURL {
                                         openURL(websiteURL)
                                     }
                                 }
                                 .contextMenu {
-                                    if let websiteURL {
+                                    if let websiteURL = item.websiteURL {
                                         ShareLink(item: websiteURL)
                                         Link(destination: websiteURL) {
                                             Label("Open in Safari", systemImage: "safari")
@@ -110,6 +94,18 @@ struct PasswordItemDetailView: View {
         .onChange(of: item, {
             self.textPassword = item.readPassword(from: aes)
             self.totpSecretText = item.readTotpSecret(from: aes)
+        })
+        .onChange(of: isEditing, {
+            Task { @MainActor [item] in
+                do {
+                    let favicon = try await item.getWebsiteIcon()
+                    await MainActor.run {
+                        item.image = favicon?.pngData()
+                    }
+                } catch {
+                    print(error)
+                }
+            }
         })
         .animation(.default, value: isEditing)
         .toolbar {
