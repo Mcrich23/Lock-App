@@ -150,9 +150,9 @@ struct Setup2FAView: View {
                             .environment(controller)
                     }
                     .opacity(isShowingMFA3 ? 1 : 0)
-                    .padding()
                 }
                 .padding(.horizontal, 2)
+                .padding(.vertical)
             }
         }
         .task {

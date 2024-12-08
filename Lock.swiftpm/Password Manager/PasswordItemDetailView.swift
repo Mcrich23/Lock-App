@@ -35,62 +35,65 @@ struct PasswordItemDetailView: View {
         ScrollView {
             GeometryReader { geo in
                 VStack {
-                    GroupBox {
-                        HStack {
-                            Image(systemName: "globe")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .foregroundStyle(.white)
-                                .frame(width: 50, height: 50)
-                                .background(Color.gray.secondary)
-                            
-                            VStack(alignment: .leading) {
-                                if !isEditing {
-                                    Text(item.name ?? item.website)
-                                        .font(.title)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .matchedGeometryEffect(id: "name_text", in: namespace)
-                                } else {
-                                    TextField("Name", text: optionalToRequiredStringBinding($item.name))
-                                        .font(.title)
-                                        .textFieldStyle(.emptyable(with: $item.name))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .matchedGeometryEffect(id: "name_text", in: namespace)
-                                }
+                    HStack {
+                        Image(systemName: "globe")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(.white)
+                            .frame(width: 50, height: 50)
+                            .background(Color.gray.secondary)
+                        
+                        VStack(alignment: .leading) {
+                            if !isEditing {
+                                Text(item.name ?? item.website)
+                                    .font(.title)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .matchedGeometryEffect(id: "name_text", in: namespace)
+                            } else {
+                                TextField("Name", text: optionalToRequiredStringBinding($item.name))
+                                    .font(.title)
+                                    .textFieldStyle(.emptyable(with: $item.name))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .matchedGeometryEffect(id: "name_text", in: namespace)
                             }
-                            
-                            Spacer()
                         }
                         
-                        Group {
-                            editableRowItem(withName: "User Name", binding: $item.userName)
-                            passwordRow
-                            
-                            if isEditing {
-                                editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
-                            } else {
-                                editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
-                                    .onTapGesture {
-                                        if let websiteURL {
-                                            openURL(websiteURL)
-                                        }
-                                    }
-                                    .contextMenu {
-                                        if let websiteURL {
-                                            ShareLink(item: websiteURL)
-                                            Link(destination: websiteURL) {
-                                                Label("Open in Safari", systemImage: "safari")
-                                            }
-                                        }
-                                    }
-                            }
-                            
-                            mfaRow(width: geo.size.width)
-                        }
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                        Spacer()
                     }
+                    
+                    Group {
+                        editableRowItem(withName: "User Name", binding: $item.userName)
+                        passwordRow
+                        
+                        if isEditing {
+                            editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
+                        } else {
+                            editableRowItem(withName: "Website", binding: $item.website, isShowing: item.name?.isEmpty == false, valueTint: .accentColor)
+                                .onTapGesture {
+                                    if let websiteURL {
+                                        openURL(websiteURL)
+                                    }
+                                }
+                                .contextMenu {
+                                    if let websiteURL {
+                                        ShareLink(item: websiteURL)
+                                        Link(destination: websiteURL) {
+                                            Label("Open in Safari", systemImage: "safari")
+                                        }
+                                    }
+                                }
+                        }
+                        
+                        mfaRow(width: geo.size.width)
+                    }
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                }
+                .padding()
+                .background {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color(uiColor: .secondarySystemBackground))
                 }
             }
             .frame(maxWidth: 800)
