@@ -214,6 +214,7 @@ struct PasswordItemDetailView: View {
             .popover(isPresented: $isShowingMFAEducation) {
                 NavigationStack {
                     Setup2FAView(isAnimatedIntro: false)
+                        .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .phone ? 0 : nil)
                         .toolbar {
                             Button {
                                 isShowingMFAEducation = false
@@ -222,8 +223,7 @@ struct PasswordItemDetailView: View {
                             }
                         }
                 }
-                .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, height: UIDevice.current.userInterfaceIdiom == .phone ? nil : 800)
-                .padding(.horizontal, UIDevice.current.userInterfaceIdiom == .phone ? 0 : nil)
+                .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, height: UIDevice.current.userInterfaceIdiom == .phone ? nil : 600, alignment: .top)
             }
             .matchedGeometryEffect(id: "mfa_learn_more", in: namespace)
             .background(alignment: .trailing) {
