@@ -156,7 +156,7 @@ struct PasswordItemDetailView: View {
                                 .onTapGesture {
                                     isShowingPassword.toggle()
                                 }
-                                .scaleEffect(x: 1.2)
+                                .scaleEffect(x: 1.05)
                         })
                         .overlay {
                             RoundedRectangle(cornerRadius: 4)
@@ -170,7 +170,7 @@ struct PasswordItemDetailView: View {
                                         }
                                 })
                                 .opacity(isShowingPassword ? 0 : 1)
-                                .scaleEffect(x: 1.2)
+                                .scaleEffect(x: 1.05)
                         }
                         .animation(.default, value: isShowingPassword)
                 }
