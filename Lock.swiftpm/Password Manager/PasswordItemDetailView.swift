@@ -318,6 +318,13 @@ struct PasswordItemDetailView: View {
                 if let otpText {
                     HStack(spacing: hasTwoRows ? 10 : 20) {
                         Text(otpText)
+                            .contextMenu {
+                                Button(action: {
+                                    UIPasteboard.general.string = otpText
+                                }) {
+                                    Label("Copy to clipboard", systemImage: "doc.on.doc")
+                                }
+                             }
                         
                         if let time = timeUntilNewOtp {
                             CircleCountdownView(progress: 1-((time-1)/30))
